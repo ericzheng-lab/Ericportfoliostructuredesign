@@ -109,6 +109,13 @@ import zhibenStill5 from "figma:asset/5a3528b3fb04579029965b741c8b945380afe568.p
 import zhibenStill6 from "figma:asset/4126b440379aac8a7081b801ca3785274fb81f48.png";
 import zhibenStill7 from "figma:asset/1649a8ed4b6755c9c30099619840cc8a59d34dce.png";
 
+// Honkai Clockboy stills
+import honkaiCover from "figma:asset/dbe10da11185585d62b02247cdb2c36841fdab21.png";
+import honkaiStill1 from "figma:asset/4f57631cd83e53fd69efd4b363e53e73a0b71bc6.png";
+import honkaiStill2 from "figma:asset/cc031a10d7b563ebd21d4ac3a4bd7e0f5d82aa39.png";
+import honkaiStill3 from "figma:asset/2d4d9a2afc732c7517861946d541c60ad3fa0bcd.png";
+import honkaiStill4 from "figma:asset/44fdae15a756b3a05d97d9128f88c72c98e096fe.png";
+
 const featureFilm = {
   title: "Brief History of A Family",
   tagline: "A film by Lin Jianjie",
@@ -344,12 +351,14 @@ const projects = [
     production: "Final Frontier",
     director: "Salvador Simó",
     credits: "Executive Producer",
-    thumbnail: "https://images.unsplash.com/photo-1713181011134-f57327f93f8f?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxhbmltZSUyMHN0ZWFtcHVuayUyMGNsb2Nrd29ya3xlbnwxfHx8fDE3NzMyODY5OTV8MA&ixlib=rb-4.1.0&q=80&w=1080",
+    thumbnail: honkaiCover,
     videoUrl: "",
     videoType: "vimeo" as const,
     additionalImages: [
-      "https://images.unsplash.com/photo-1713181011134-f57327f93f8f?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxhbmltZSUyMHN0ZWFtcHVuayUyMGNsb2Nrd29ya3xlbnwxfHx8fDE3NzMyODY5OTV8MA&ixlib=rb-4.1.0&q=80&w=1080",
-      "https://images.unsplash.com/photo-1549474681-c1975561f93f?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxmYW50YXN5JTIwZ2FtZSUyMGFjdGlvbiUyMHNjZW5lfGVufDF8fHx8MTc3MzI4NzAwMXww&ixlib=rb-4.1.0&q=80&w=1080"
+      honkaiStill1,
+      honkaiStill2,
+      honkaiStill3,
+      honkaiStill4
     ]
   },
   {
