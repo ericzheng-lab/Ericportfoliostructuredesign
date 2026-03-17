@@ -172,14 +172,14 @@ export function FeatureFilm({ film }: FeatureFilmProps) {
                     </a>
                   </motion.p>
                   <motion.div layout className="mb-4 sm:mb-6">
-                    <div className="flex items-center gap-2 sm:gap-3 mb-3 sm:mb-4">
-                      <div className="h-px w-4 sm:w-6 bg-gradient-to-r from-cyan-500 to-purple-500" />
+                    <div className="flex items-center justify-center gap-2 sm:gap-3 mb-3 sm:mb-4">
+                      <div className="h-px w-8 sm:w-12 bg-gradient-to-r from-transparent to-purple-500" />
                       <span className="text-[10px] sm:text-xs md:text-sm text-white/60 uppercase" style={{ fontFamily: 'var(--font-sans)', letterSpacing: '0.3em' }}>
                         Official Selection
                       </span>
-                      <div className="h-px flex-1 bg-gradient-to-r from-purple-500/30 to-transparent" />
+                      <div className="h-px w-8 sm:w-12 bg-gradient-to-r from-purple-500 to-transparent" />
                     </div>
-                    <div className="flex flex-col sm:flex-row items-start sm:items-center gap-4 sm:gap-6">
+                    <div className="flex flex-col sm:flex-row items-center justify-center gap-4 sm:gap-6">
                       <div className="flex items-center gap-3">
                         <img src={sundanceLogo} alt="Sundance Film Festival" className="h-6 sm:h-7 md:h-9 object-contain opacity-70" />
                         <span className="text-[10px] sm:text-xs text-white/40 uppercase tracking-wider hidden sm:inline" style={{ fontFamily: 'var(--font-sans)' }}>Sundance Film Festival</span>
@@ -226,8 +226,8 @@ export function FeatureFilm({ film }: FeatureFilmProps) {
                     </p>
                   </motion.div>
 
-                  <motion.p layout className="text-base sm:text-lg text-cyan-400 font-medium mb-4 sm:mb-6 uppercase tracking-wide" style={{ fontFamily: 'var(--font-sans)' }}>
-                    As Producer
+                  <motion.p layout className="text-base sm:text-lg text-white/60 font-medium mb-4 sm:mb-6 uppercase tracking-wide" style={{ fontFamily: 'var(--font-sans)' }}>
+                    <span className="text-white/40">as</span> Producer
                   </motion.p>
                 </div>
 

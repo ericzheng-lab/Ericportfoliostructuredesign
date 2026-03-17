@@ -1,7 +1,8 @@
-import { useState, useRef, useEffect, useCallback } from "react";
+import { useState, useRef, useEffect, useCallback, useMemo } from "react";
 import { createPortal } from "react-dom";
 import { FeatureFilm } from "./FeatureFilm";
 import { ExperientialSpatial } from "./ExperientialSpatial";
+import { SelectClients } from "./SelectClients";
 import { ImageWithFallback } from "./figma/ImageWithFallback";
 import { Play, Mail, Linkedin, X, ChevronLeft, ChevronRight, ArrowUpToLine, MapPin } from "lucide-react";
 import { motion, AnimatePresence } from "motion/react";
@@ -37,6 +38,7 @@ export interface Project {
 
 interface PortfolioCinematicProps {
   projects: Project[];
+  showreelUrl?: string;
   featureFilm?: {
     title: string;
     tagline: string;
@@ -62,15 +64,12 @@ function CinematicCursor() {
   const [hasFineCursor, setHasFineCursor] = useState(false);
   const rafId = useRef<number>(0);
 
-  // Step 1: detect pointer capability
   useEffect(() => {
     setHasFineCursor(window.matchMedia("(pointer: fine)").matches);
   }, []);
 
-  // Step 2: after DOM is rendered with refs attached, set up tracking
   useEffect(() => {
     if (!hasFineCursor) return;
-
     const cursor = cursorRef.current;
     const dot = dotRef.current;
     if (!cursor || !dot) return;
@@ -144,7 +143,369 @@ function CinematicCursor() {
   );
 }
 
-export function PortfolioCinematic({ projects, featureFilm }: PortfolioCinematicProps) {
+// ── #6: Magnetic Play Button Component ──
+function MagneticPlayButton({ onClick }: { onClick: () => void }) {
+  const btnRef = useRef<HTMLDivElement>(null);
+  const [offset, setOffset] = useState({ x: 0, y: 0 });
+
+  const handleMouseMove = useCallback((e: React.MouseEvent) => {
+    if (!btnRef.current) return;
+    const rect = btnRef.current.getBoundingClientRect();
+    const centerX = rect.left + rect.width / 2;
+    const centerY = rect.top + rect.height / 2;
+    const dx = e.clientX - centerX;
+    const dy = e.clientY - centerY;
+    const dist = Math.sqrt(dx * dx + dy * dy);
+    const maxDist = 120;
+    if (dist < maxDist) {
+      const strength = (1 - dist / maxDist) * 15;
+      setOffset({ x: (dx / dist) * strength, y: (dy / dist) * strength });
+    }
+  }, []);
+
+  const handleMouseLeave = useCallback(() => {
+    setOffset({ x: 0, y: 0 });
+  }, []);
+
+  return (
+    <div
+      ref={btnRef}
+      onMouseMove={handleMouseMove}
+      onMouseLeave={handleMouseLeave}
+      onClick={onClick}
+      className="w-14 h-14 sm:w-20 sm:h-20 rounded-full border-2 border-white flex items-center justify-center backdrop-blur-sm bg-white/10 hover:bg-white/20 cursor-pointer"
+      style={{
+        transform: `translate(${offset.x}px, ${offset.y}px)`,
+        transition: offset.x === 0 && offset.y === 0 ? 'transform 0.5s cubic-bezier(0.23, 1, 0.32, 1)' : 'transform 0.15s ease-out',
+      }}
+    >
+      <Play className="w-6 h-6 sm:w-8 sm:h-8 ml-1" />
+    </div>
+  );
+}
+
+// ── #4: Stagger Title Component ──
+function StaggerTitle({ lines, index }: { lines: { text: string; className: string; style?: React.CSSProperties }[]; index: number }) {
+  return (
+    <>
+      {lines.map((line, i) => (
+        <motion.div
+          key={i}
+          initial={{ opacity: 0, y: 25, clipPath: 'inset(0 100% 0 0)' }}
+          whileInView={{ opacity: 1, y: 0, clipPath: 'inset(0 0% 0 0)' }}
+          transition={{ duration: 0.7, delay: 0.1 * i, ease: [0.16, 1, 0.3, 1] }}
+          viewport={VIEWPORT_ONCE}
+        >
+          {line.style ? (
+            <p className={line.className} style={line.style}>{line.text}</p>
+          ) : (
+            <h3 className={line.className}>{line.text}</h3>
+          )}
+        </motion.div>
+      ))}
+    </>
+  );
+}
+
+// ── #3: Parallax Image Component ──
+function ParallaxImage({ src, alt, className }: { src: string; alt: string; className?: string }) {
+  const ref = useRef<HTMLDivElement>(null);
+  const innerRef = useRef<HTMLDivElement>(null);
+  const rafRef = useRef<number>(0);
+
+  useEffect(() => {
+    const el = ref.current;
+    const inner = innerRef.current;
+    if (!el || !inner) return;
+
+    const update = () => {
+      const rect = el.getBoundingClientRect();
+      const vh = window.innerHeight;
+      // 0 when element top enters viewport bottom, 1 when element bottom leaves viewport top
+      const progress = Math.min(Math.max((vh - rect.top) / (vh + rect.height), 0), 1);
+      // Map to -20% .. +20% for stronger parallax depth
+      const yPercent = (progress - 0.5) * 40;
+      inner.style.transform = `translateY(${yPercent}%)`;
+    };
+
+    const onScroll = () => {
+      cancelAnimationFrame(rafRef.current);
+      rafRef.current = requestAnimationFrame(update);
+    };
+
+    window.addEventListener('scroll', onScroll, { passive: true });
+    update(); // initial position
+    return () => {
+      window.removeEventListener('scroll', onScroll);
+      cancelAnimationFrame(rafRef.current);
+    };
+  }, []);
+
+  return (
+    <div ref={ref} className="relative w-full h-full overflow-hidden">
+      <div ref={innerRef} className="absolute inset-[-30%] will-change-transform">
+        <div className="w-full h-full transition-transform duration-700 ease-out group-hover:scale-105">
+          <ImageWithFallback
+            src={src}
+            alt={alt}
+            className={className || "w-full h-full object-cover"}
+            loading="lazy"
+          />
+        </div>
+      </div>
+    </div>
+  );
+}
+
+// ── #12: Email Scramble Component ──
+function ScrambleEmail({ email }: { email: string }) {
+  const [displayText, setDisplayText] = useState(email);
+  const [isScrambling, setIsScrambling] = useState(false);
+  const chars = "!@#$%^&*()_+-=[]{}|;:,.<>?/~`ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
+  const intervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
+
+  const handleMouseEnter = useCallback(() => {
+    if (isScrambling) return;
+    setIsScrambling(true);
+    let iteration = 0;
+    intervalRef.current = setInterval(() => {
+      setDisplayText(
+        email.split("").map((char, i) => {
+          if (i < iteration) return email[i];
+          return chars[Math.floor(Math.random() * chars.length)];
+        }).join("")
+      );
+      iteration += 1 / 2;
+      if (iteration >= email.length) {
+        if (intervalRef.current) clearInterval(intervalRef.current);
+        setDisplayText(email);
+        setIsScrambling(false);
+      }
+    }, 30);
+  }, [email, isScrambling]);
+
+  useEffect(() => {
+    return () => { if (intervalRef.current) clearInterval(intervalRef.current); };
+  }, []);
+
+  return (
+    <a
+      href={`mailto:${email}`}
+      className="inline-flex items-center gap-2 sm:gap-4 text-base sm:text-xl md:text-2xl hover:text-cyan-400 transition-colors font-light border-b border-white/20 hover:border-cyan-400/50 pb-2 break-all sm:break-normal"
+      onMouseEnter={handleMouseEnter}
+    >
+      <Mail className="w-5 h-5 sm:w-6 sm:h-6 flex-shrink-0" />
+      <span className="scramble-text">{displayText}</span>
+    </a>
+  );
+}
+
+// ── #10: Sticky Nav Component ──
+function StickyNav({ show, activeSection }: { show: boolean; activeSection: string }) {
+  const sections = [
+    { id: "section-feature-film", label: "Feature Film" },
+    { id: "section-selected-work", label: "Productions" },
+    { id: "section-experiential", label: "Experiential" },
+  ];
+
+  return createPortal(
+    <AnimatePresence>
+      {show && (
+        <motion.nav
+          initial={{ y: -60, opacity: 0 }}
+          animate={{ y: 0, opacity: 1 }}
+          exit={{ y: -60, opacity: 0 }}
+          transition={{ duration: 0.4, ease: [0.16, 1, 0.3, 1] }}
+          className="sticky-nav"
+        >
+          <div className="max-w-7xl mx-auto px-4 sm:px-8 h-12 sm:h-14 flex items-center justify-between">
+            <button
+              onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })}
+              className="text-sm sm:text-base tracking-widest text-white/70 hover:text-white transition-colors cursor-pointer"
+              style={{ fontFamily: 'var(--font-serif)' }}
+            >
+              ERIC ZHENG
+            </button>
+            <div className="hidden sm:flex items-center gap-6 md:gap-8">
+              {sections.map(s => (
+                <button
+                  key={s.id}
+                  onClick={() => document.getElementById(s.id)?.scrollIntoView({ behavior: "smooth" })}
+                  className={`text-xs uppercase tracking-wider transition-colors cursor-pointer ${
+                    activeSection === s.id ? 'text-cyan-400' : 'text-white/40 hover:text-white/70'
+                  }`}
+                >
+                  {s.label}
+                </button>
+              ))}
+              <button
+                onClick={() => document.querySelector('section:last-of-type')?.scrollIntoView({ behavior: "smooth" })}
+                className="text-xs uppercase tracking-wider text-white/40 hover:text-white/70 transition-colors cursor-pointer"
+              >
+                Contact
+              </button>
+            </div>
+          </div>
+        </motion.nav>
+      )}
+    </AnimatePresence>,
+    document.body
+  );
+}
+
+// ── #2: Cinematic Intro Overlay ──
+function CinematicIntro({ onComplete }: { onComplete: () => void }) {
+  const [phase, setPhase] = useState<'black' | 'count3' | 'count2' | 'count1' | 'iris' | 'bars' | 'done'>('black');
+
+  useEffect(() => {
+    // Phase timeline: black(0) → count3(300) → count2(950) → count1(1600) → iris(2250) → bars(3100) → done(3700)
+    const t0 = setTimeout(() => setPhase('count3'), 300);
+    const t1 = setTimeout(() => setPhase('count2'), 950);
+    const t2 = setTimeout(() => setPhase('count1'), 1600);
+    const t3 = setTimeout(() => setPhase('iris'), 2250);
+    const t4 = setTimeout(() => setPhase('bars'), 3100);
+    const t5 = setTimeout(() => {
+      setPhase('done');
+      onComplete();
+    }, 3700);
+    return () => { [t0, t1, t2, t3, t4, t5].forEach(clearTimeout); };
+  }, [onComplete]);
+
+  if (phase === 'done') return null;
+
+  const isLeader = phase === 'count3' || phase === 'count2' || phase === 'count1';
+  const countdownNumber = phase === 'count3' ? 3 : phase === 'count2' ? 2 : 1;
+
+  return createPortal(
+    <motion.div
+      className="fixed inset-0 z-[9999] pointer-events-none"
+      animate={{ opacity: phase === 'bars' ? 0 : 1 }}
+      transition={{ duration: 0.7, ease: 'easeInOut' }}
+    >
+      {/* Black overlay — hidden during iris so the mask can work */}
+      {phase !== 'iris' && phase !== 'bars' && (
+        <div className="absolute inset-0 bg-black" />
+      )}
+
+      {/* Film Leader Countdown — each number fades in/out independently */}
+      {isLeader && (
+        <div className="absolute inset-0 flex items-center justify-center z-40">
+          {/* Rotating crosshair rings — persistent across all counts */}
+          <motion.div
+            animate={{ rotate: 360 }}
+            transition={{ duration: 1.5, ease: 'linear', repeat: Infinity }}
+            className="absolute w-32 h-32 sm:w-48 sm:h-48 rounded-full border border-white/20"
+          />
+          <motion.div
+            animate={{ rotate: -360 }}
+            transition={{ duration: 2, ease: 'linear', repeat: Infinity }}
+            className="absolute w-24 h-24 sm:w-36 sm:h-36 rounded-full border border-white/10"
+          />
+          {/* Crosshair lines */}
+          <div className="absolute w-40 sm:w-56 h-px bg-white/15" />
+          <div className="absolute h-40 sm:h-56 w-px bg-white/15" />
+          {/* Countdown number — key change triggers independent animation */}
+          <AnimatePresence mode="popLayout">
+            <motion.span
+              key={countdownNumber}
+              initial={{ opacity: 0, scale: 1.4 }}
+              animate={{ opacity: 1, scale: 1 }}
+              exit={{ opacity: 0, scale: 0.7 }}
+              transition={{ duration: 0.3, ease: [0.16, 1, 0.3, 1] }}
+              className="text-7xl sm:text-9xl text-white/80 tabular-nums absolute"
+              style={{ fontFamily: 'var(--font-sans)', fontWeight: 300 }}
+            >
+              {countdownNumber}
+            </motion.span>
+          </AnimatePresence>
+        </div>
+      )}
+
+      {/* Iris Wipe Open — black mask with expanding circular hole using box-shadow */}
+      {phase === 'iris' && (
+        <div className="absolute inset-0 z-20 overflow-hidden">
+          <motion.div
+            className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 rounded-full"
+            initial={{ width: 0, height: 0 }}
+            animate={{ width: '250vmax', height: '250vmax' }}
+            transition={{ duration: 1.0, ease: [0.16, 1, 0.3, 1] }}
+            style={{
+              boxShadow: '0 0 0 100vmax black',
+            }}
+          />
+        </div>
+      )}
+
+      {/* Letterbox bars slide in during iris phase */}
+      <motion.div
+        className="absolute top-0 left-0 right-0 bg-black z-30"
+        initial={{ height: '50%' }}
+        animate={{
+          height: phase === 'iris' || phase === 'bars' ? '0%' : '50%',
+        }}
+        transition={{ duration: 0.6, ease: [0.16, 1, 0.3, 1] }}
+      />
+      <motion.div
+        className="absolute bottom-0 left-0 right-0 bg-black z-30"
+        initial={{ height: '50%' }}
+        animate={{
+          height: phase === 'iris' || phase === 'bars' ? '0%' : '50%',
+        }}
+        transition={{ duration: 0.6, ease: [0.16, 1, 0.3, 1] }}
+      />
+
+      {/* Center line accent during iris */}
+      {phase === 'iris' && (
+        <motion.div
+          className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 h-px bg-gradient-to-r from-transparent via-cyan-400 to-transparent z-25"
+          initial={{ width: 0, opacity: 1 }}
+          animate={{ width: '60%', opacity: 0 }}
+          transition={{ duration: 0.8, ease: 'easeOut' }}
+        />
+      )}
+    </motion.div>,
+    document.body
+  );
+}
+
+// ── #5: Blur-Up Image Component ──
+function BlurUpImage({ src, alt, className }: { src: string; alt: string; className?: string }) {
+  const [loaded, setLoaded] = useState(false);
+  const imgRef = useRef<HTMLImageElement>(null);
+
+  useEffect(() => {
+    if (imgRef.current?.complete) setLoaded(true);
+  }, []);
+
+  return (
+    <div className="relative w-full h-full">
+      {/* Shimmer placeholder */}
+      <div
+        className="absolute inset-0 bg-zinc-800 transition-opacity duration-500"
+        style={{ opacity: loaded ? 0 : 1 }}
+      >
+        <div
+          className="absolute inset-0"
+          style={{
+            background: 'linear-gradient(90deg, transparent 0%, rgba(255,255,255,0.04) 50%, transparent 100%)',
+            backgroundSize: '200% 100%',
+            animation: loaded ? 'none' : 'shimmer 1.5s ease-in-out infinite',
+          }}
+        />
+      </div>
+      <img
+        ref={imgRef}
+        src={src}
+        alt={alt}
+        className={`${className || ''} transition-opacity duration-500 ${loaded ? 'opacity-100' : 'opacity-0'}`}
+        loading="lazy"
+        onLoad={() => setLoaded(true)}
+      />
+    </div>
+  );
+}
+
+export function PortfolioCinematic({ projects, showreelUrl, featureFilm }: PortfolioCinematicProps) {
   const uniqueProjects = projects.filter((project, index, self) =>
     index === self.findIndex((p) => p.id === project.id)
   );
@@ -155,15 +516,31 @@ export function PortfolioCinematic({ projects, featureFilm }: PortfolioCinematic
   const [enlargedStill, setEnlargedStill] = useState<{ src: string; images: string[]; index: number } | null>(null);
   const [showBackToTop, setShowBackToTop] = useState(false);
   const [scrollProgress, setScrollProgress] = useState(0);
+  const [showNav, setShowNav] = useState(false);
+  const [activeSection, setActiveSection] = useState("");
+  const [introComplete, setIntroComplete] = useState(false);
   const videoRef = useRef<HTMLVideoElement | null>(null);
   const stillsRefs = useRef<{ [key: string]: HTMLDivElement | null }>({});
 
-  // ── Scroll handler: back-to-top + progress bar ──
+  const handleIntroComplete = useCallback(() => setIntroComplete(true), []);
+
+  // ── Scroll handler: back-to-top + progress bar + sticky nav + active section ──
   useEffect(() => {
+    const sectionIds = ["section-feature-film", "section-selected-work", "section-experiential"];
     const handleScroll = () => {
-      setShowBackToTop(window.scrollY > window.innerHeight);
+      const scrollY = window.scrollY;
+      setShowBackToTop(scrollY > window.innerHeight);
+      setShowNav(scrollY > window.innerHeight * 0.8);
       const docHeight = document.documentElement.scrollHeight - window.innerHeight;
-      setScrollProgress(docHeight > 0 ? (window.scrollY / docHeight) * 100 : 0);
+      setScrollProgress(docHeight > 0 ? (scrollY / docHeight) * 100 : 0);
+
+      // Determine active section
+      let current = "";
+      for (const id of sectionIds) {
+        const el = document.getElementById(id);
+        if (el && scrollY >= el.offsetTop - 200) current = id;
+      }
+      setActiveSection(current);
     };
     window.addEventListener("scroll", handleScroll, { passive: true });
     return () => window.removeEventListener("scroll", handleScroll);
@@ -190,7 +567,6 @@ export function PortfolioCinematic({ projects, featureFilm }: PortfolioCinematic
         if (enlargedStill) setEnlargedStill(null);
         else if (playingVideo) { setPlayingVideo(null); setSelectedSeriesVideo(null); }
       }
-      // Gallery left/right navigation
       if (enlargedStill) {
         if (e.key === "ArrowLeft") navigateStill(-1);
         if (e.key === "ArrowRight") navigateStill(1);
@@ -238,10 +614,31 @@ export function PortfolioCinematic({ projects, featureFilm }: PortfolioCinematic
     return url;
   };
 
+  // Hero background images (cycle through project thumbnails)
+  const heroImages = useMemo(() => uniqueProjects.slice(0, 5).map(p => p.thumbnail), [uniqueProjects]);
+  const [heroImageIndex, setHeroImageIndex] = useState(0);
+
+  useEffect(() => {
+    if (heroImages.length <= 1) return;
+    const interval = setInterval(() => {
+      setHeroImageIndex(prev => (prev + 1) % heroImages.length);
+    }, 5000);
+    return () => clearInterval(interval);
+  }, [heroImages.length]);
+
   return (
     <div className="min-h-screen bg-zinc-900 text-white relative overflow-hidden">
+      {/* #2: Cinematic Intro */}
+      {!introComplete && <CinematicIntro onComplete={handleIntroComplete} />}
+
+      {/* #8: Film Grain Overlay */}
+      <div className="film-grain" />
+
       {/* Custom Cursor */}
       <CinematicCursor />
+
+      {/* #10: Sticky Navigation */}
+      <StickyNav show={showNav} activeSection={activeSection} />
 
       {/* Scroll Progress Bar */}
       <div className="scroll-progress" style={{ width: `${scrollProgress}%` }} />
@@ -251,7 +648,7 @@ export function PortfolioCinematic({ projects, featureFilm }: PortfolioCinematic
       <div className="fixed bottom-1/3 left-1/4 w-80 h-80 bg-cyan-500/15 rounded-full blur-3xl pointer-events-none animate-orb-2" />
       <div className="fixed top-1/2 right-1/3 w-64 h-64 bg-pink-500/20 rounded-full blur-3xl pointer-events-none animate-orb-3" />
       
-      {/* Video Modal Overlay */}
+      {/* #7: Video Modal Overlay — with Iris Wipe */}
       <AnimatePresence>
         {playingVideo && (() => {
           const project = uniqueProjects.find(p => p.id === playingVideo);
@@ -260,18 +657,22 @@ export function PortfolioCinematic({ projects, featureFilm }: PortfolioCinematic
           return (
             <motion.div
               key="video-modal"
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              exit={{ opacity: 0 }}
+              initial={{ clipPath: 'circle(0% at 50% 50%)' }}
+              animate={{ clipPath: 'circle(100% at 50% 50%)' }}
+              exit={{ clipPath: 'circle(0% at 50% 50%)' }}
+              transition={{ duration: 0.6, ease: [0.16, 1, 0.3, 1] }}
               className="fixed inset-0 bg-black/95 z-50 flex items-center justify-center p-4 md:p-8 backdrop-blur-sm"
               onClick={handleCloseVideo}
             >
-              <button
+              <motion.button
+                initial={{ opacity: 0, scale: 0.8 }}
+                animate={{ opacity: 1, scale: 1 }}
+                transition={{ delay: 0.3 }}
                 onClick={handleCloseVideo}
                 className="absolute top-4 right-4 md:top-8 md:right-8 w-12 h-12 rounded-full bg-white/10 hover:bg-white/20 flex items-center justify-center transition-all z-10"
               >
                 <X className="w-6 h-6" />
-              </button>
+              </motion.button>
 
               {hasSeries && !selectedSeriesVideo ? (
                 <div 
@@ -350,13 +751,49 @@ export function PortfolioCinematic({ projects, featureFilm }: PortfolioCinematic
         })()}
       </AnimatePresence>
       
-      {/* Hero Section - Full Screen with Entrance Animation */}
+      {/* #1: Hero Section — Full Screen with Background Showreel Video */}
       <section className="h-screen flex items-center justify-center px-4 sm:px-6 md:px-16 relative overflow-hidden">
-        <div className="absolute inset-0 bg-gradient-to-b from-transparent via-zinc-900/50 to-zinc-900 z-10" />
+        {/* Background: Showreel Video or Image Slideshow Fallback */}
+        {showreelUrl ? (
+          <div className="absolute inset-0">
+            <video
+              src={showreelUrl}
+              autoPlay
+              muted
+              loop
+              playsInline
+              className="w-full h-full object-cover"
+              style={{ opacity: 0.35 }}
+            />
+          </div>
+        ) : (
+          <AnimatePresence mode="wait">
+            <motion.div
+              key={heroImageIndex}
+              initial={{ opacity: 0, scale: 1.1 }}
+              animate={{ opacity: 0.3, scale: 1 }}
+              exit={{ opacity: 0, scale: 1.05 }}
+              transition={{ duration: 2, ease: 'easeInOut' }}
+              className="absolute inset-0"
+            >
+              <img
+                src={heroImages[heroImageIndex]}
+                alt=""
+                className="w-full h-full object-cover"
+              />
+            </motion.div>
+          </AnimatePresence>
+        )}
+        {/* Multi-layer gradient overlay for cinematic depth */}
+        <div className="absolute inset-0 bg-gradient-to-b from-zinc-900/50 via-zinc-900/60 to-zinc-900 z-10" />
+        <div className="absolute inset-0 bg-gradient-to-r from-zinc-900/40 via-transparent to-zinc-900/40 z-10" />
+        {/* Subtle vignette */}
+        <div className="absolute inset-0 z-10" style={{ boxShadow: 'inset 0 0 200px 60px rgba(0,0,0,0.5)' }} />
+        
         <div className="text-center z-20">
           <motion.div
             initial={{ opacity: 0, y: 30 }}
-            animate={{ opacity: 1, y: 0 }}
+            animate={introComplete ? { opacity: 1, y: 0 } : {}}
             transition={{ duration: 1.2, ease: "easeOut" }}
             className="inline-block relative mb-4 sm:mb-8"
           >
@@ -367,7 +804,7 @@ export function PortfolioCinematic({ projects, featureFilm }: PortfolioCinematic
           <div className="space-y-2 sm:space-y-3">
             <motion.h2
               initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
+              animate={introComplete ? { opacity: 1, y: 0 } : {}}
               transition={{ duration: 1, delay: 0.4, ease: "easeOut" }}
               className="text-xl sm:text-3xl md:text-4xl lg:text-5xl text-white tracking-widest uppercase"
             >
@@ -375,7 +812,7 @@ export function PortfolioCinematic({ projects, featureFilm }: PortfolioCinematic
             </motion.h2>
             <motion.p
               initial={{ opacity: 0, y: 15 }}
-              animate={{ opacity: 1, y: 0 }}
+              animate={introComplete ? { opacity: 1, y: 0 } : {}}
               transition={{ duration: 1, delay: 0.7, ease: "easeOut" }}
               className="text-sm sm:text-lg md:text-xl lg:text-2xl text-cyan-400/90 italic px-4"
               style={{ fontFamily: 'var(--font-serif)', fontWeight: 400 }}
@@ -386,7 +823,7 @@ export function PortfolioCinematic({ projects, featureFilm }: PortfolioCinematic
           {/* Scroll hint */}
           <motion.div
             initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
+            animate={introComplete ? { opacity: 1 } : {}}
             transition={{ delay: 1.5, duration: 1 }}
             className="absolute bottom-8 left-1/2 -translate-x-1/2"
           >
@@ -419,12 +856,13 @@ export function PortfolioCinematic({ projects, featureFilm }: PortfolioCinematic
 
       {/* Portfolio - Full Width Images */}
       <section id="section-selected-work" className="py-16 relative">
+        {/* #9: Gradient Text Section Title */}
         <motion.h2 {...FADE_UP} className="text-3xl sm:text-4xl md:text-5xl mb-16 sm:mb-24 text-center tracking-tight font-light relative">
-          SELECTED WORK
+          <span className="gradient-text">PRODUCTIONS | CAMPAIGNS & FILMS</span>
           <div className="absolute -top-2 left-1/2 -translate-x-1/2 w-16 h-0.5 bg-gradient-to-r from-purple-400 via-pink-400 to-cyan-400" />
         </motion.h2>
         <div className="space-y-20 sm:space-y-32">
-          {uniqueProjects.map((project) => (
+          {uniqueProjects.map((project, projectIndex) => (
             <motion.div
               key={project.id}
               {...FADE_UP}
@@ -432,17 +870,22 @@ export function PortfolioCinematic({ projects, featureFilm }: PortfolioCinematic
               onMouseEnter={() => setHoveredProject(project.id)}
               onMouseLeave={() => setHoveredProject(null)}
             >
-              {/* Main Large Image */}
+              {/* #11: Project Number Indicator */}
+              <div className="absolute -left-2 sm:left-4 md:left-8 top-4 sm:top-8 z-[5] pointer-events-none">
+                <span className="text-[4rem] sm:text-[6rem] md:text-[8rem] font-light text-white/[0.04] leading-none select-none" style={{ fontFamily: 'var(--font-serif)' }}>
+                  {String(projectIndex + 1).padStart(2, '0')}
+                </span>
+              </div>
+
+              {/* Main Large Image — #3: Parallax */}
               <div className="relative h-[40vh] sm:h-[50vh] md:h-[65vh] overflow-hidden bg-black">
-                <ImageWithFallback
+                <ParallaxImage
                   src={project.thumbnail}
                   alt={project.name}
-                  className="w-full h-full object-cover transition-all duration-1000 group-hover:scale-110"
-                  loading="lazy"
                 />
                 <div className="absolute inset-0 bg-gradient-to-br from-purple-900/20 via-black/40 to-cyan-900/20 group-hover:opacity-50 transition-all duration-500" />
                 
-                {/* Play Button Overlay */}
+                {/* #6: Play Button Overlay — Magnetic */}
                 {(project.videoUrl || (project.videoSeries && project.videoSeries.length > 0)) && (
                   <div 
                     className={`absolute inset-0 z-10 flex items-center justify-center transition-opacity duration-500 ${
@@ -450,28 +893,29 @@ export function PortfolioCinematic({ projects, featureFilm }: PortfolioCinematic
                     }`}
                     onClick={() => handlePlayVideo(project.id)}
                   >
-                    <div className="w-14 h-14 sm:w-20 sm:h-20 rounded-full border-2 border-white flex items-center justify-center backdrop-blur-sm bg-white/10 hover:bg-white/20 transition-all cursor-pointer">
-                      <Play className="w-6 h-6 sm:w-8 sm:h-8 ml-1" />
-                    </div>
+                    <MagneticPlayButton onClick={() => handlePlayVideo(project.id)} />
                   </div>
                 )}
 
-                {/* Project Title Overlay */}
+                {/* #4: Project Title Overlay — Staggered */}
                 <div className="absolute bottom-0 left-0 right-0 p-4 sm:p-8 md:p-16 lg:p-24 pointer-events-none">
                   <div className="flex items-start gap-2 sm:gap-3">
-                    <div className="w-0.5 sm:w-1 h-16 sm:h-32 bg-gradient-to-b from-cyan-400 to-purple-400 flex-shrink-0 mt-1 sm:mt-2" />
+                    <motion.div
+                      initial={{ scaleY: 0 }}
+                      whileInView={{ scaleY: 1 }}
+                      transition={{ duration: 0.6, ease: [0.16, 1, 0.3, 1] }}
+                      viewport={VIEWPORT_ONCE}
+                      className="w-0.5 sm:w-1 h-16 sm:h-32 bg-gradient-to-b from-cyan-400 to-purple-400 flex-shrink-0 mt-1 sm:mt-2 origin-top"
+                    />
                     <div>
-                      <h3 className="text-xl sm:text-3xl md:text-5xl lg:text-6xl tracking-tight font-light uppercase">
-                        {project.brandName || project.client}
-                      </h3>
-                      <h3 className="text-xl sm:text-3xl md:text-5xl lg:text-6xl tracking-tight font-light mt-1 sm:mt-2">
-                        {project.projectTitle || project.name}
-                      </h3>
-                      {project.description && (
-                        <p className="text-sm sm:text-xl md:text-2xl lg:text-3xl text-white/80 font-light mt-1 sm:mt-2" style={{ fontFamily: 'var(--font-serif)' }}>
-                          {project.description}
-                        </p>
-                      )}
+                      <StaggerTitle
+                        index={projectIndex}
+                        lines={[
+                          { text: project.brandName || project.client, className: "text-xl sm:text-3xl md:text-5xl lg:text-6xl tracking-tight font-light uppercase" },
+                          { text: project.projectTitle || project.name, className: "text-xl sm:text-3xl md:text-5xl lg:text-6xl tracking-tight font-light mt-1 sm:mt-2" },
+                          ...(project.description ? [{ text: project.description, className: "text-sm sm:text-xl md:text-2xl lg:text-3xl text-white/80 font-light mt-1 sm:mt-2", style: { fontFamily: 'var(--font-serif)' } as React.CSSProperties }] : []),
+                        ]}
+                      />
                     </div>
                   </div>
                 </div>
@@ -482,7 +926,6 @@ export function PortfolioCinematic({ projects, featureFilm }: PortfolioCinematic
                 <div className="py-6 sm:py-8 relative">
                   <div className="px-4 sm:px-6 md:px-16 lg:px-32 mb-3 sm:mb-4 flex items-center justify-between">
                     <h4 className="text-base sm:text-xl font-light tracking-tight text-white/60">Stills</h4>
-                    {/* Touch scroll hint on mobile */}
                     <span className="text-[10px] text-white/25 uppercase tracking-wider sm:hidden">Swipe →</span>
                   </div>
                   <div className="relative group/stills">
@@ -516,11 +959,11 @@ export function PortfolioCinematic({ projects, featureFilm }: PortfolioCinematic
                             onClick={() => openStillGallery(image, project.additionalImages!)}
                             className="relative flex-shrink-0 w-[280px] sm:w-[400px] aspect-video rounded-lg overflow-hidden shadow-xl group cursor-pointer bg-zinc-800"
                           >
-                            <ImageWithFallback
+                            {/* #5: Blur-Up Image */}
+                            <BlurUpImage
                               src={image}
                               alt={`${project.name} - Still ${imgIndex + 1}`}
                               className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
-                              loading="lazy"
                             />
                             <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
                           </div>
@@ -575,7 +1018,6 @@ export function PortfolioCinematic({ projects, featureFilm }: PortfolioCinematic
             onClick={() => setEnlargedStill(null)}
             className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/90 backdrop-blur-sm cursor-pointer"
           >
-            {/* Close */}
             <motion.button
               initial={{ opacity: 0, scale: 0.8 }}
               animate={{ opacity: 1, scale: 1 }}
@@ -586,7 +1028,6 @@ export function PortfolioCinematic({ projects, featureFilm }: PortfolioCinematic
               <X className="w-5 h-5 sm:w-6 sm:h-6" />
             </motion.button>
 
-            {/* Gallery Navigation */}
             {enlargedStill.images.length > 1 && (
               <>
                 <button
@@ -604,7 +1045,6 @@ export function PortfolioCinematic({ projects, featureFilm }: PortfolioCinematic
               </>
             )}
 
-            {/* Counter */}
             <div className="absolute bottom-4 sm:bottom-8 left-1/2 -translate-x-1/2 text-white/40 text-xs sm:text-sm tracking-wider">
               {enlargedStill.index + 1} / {enlargedStill.images.length}
             </div>
@@ -624,27 +1064,25 @@ export function PortfolioCinematic({ projects, featureFilm }: PortfolioCinematic
         )}
       </AnimatePresence>
 
+      {/* Select Clients */}
+      <SelectClients />
+
       {/* Experiential & Spatial Section */}
       <ExperientialSpatial />
 
-      {/* Contact Section — Enhanced */}
+      {/* Contact Section — Enhanced with #12 Scramble Email */}
       <section className="px-4 sm:px-6 md:px-16 lg:px-32 py-20 sm:py-32 md:py-48 relative">
         <motion.div {...FADE_UP} className="max-w-2xl mx-auto text-center relative">
+          {/* #9: Gradient text on contact title */}
           <h2 className="text-4xl sm:text-5xl md:text-7xl mb-4 sm:mb-6 tracking-tight font-light">
-            Let's Create
+            <span className="gradient-text">Let's Create</span>
           </h2>
           <p className="text-white/40 text-sm sm:text-base font-light mb-8 sm:mb-12" style={{ fontFamily: 'var(--font-sans)' }}>
             Film · Branded Content · Experiential Production
           </p>
           <div className="w-20 h-px bg-gradient-to-r from-transparent via-cyan-400 to-transparent mx-auto mb-8 sm:mb-12" />
           <div className="space-y-6 sm:space-y-8">
-            <a 
-              href="mailto:eric.zheng@drsfilms.com" 
-              className="inline-flex items-center gap-2 sm:gap-4 text-base sm:text-xl md:text-2xl hover:text-cyan-400 transition-colors font-light border-b border-white/20 hover:border-cyan-400/50 pb-2 break-all sm:break-normal"
-            >
-              <Mail className="w-5 h-5 sm:w-6 sm:h-6 flex-shrink-0" />
-              eric.zheng@drsfilms.com
-            </a>
+            <ScrambleEmail email="eric.zheng@drsfilms.com" />
             <div className="flex items-center justify-center gap-2 text-white/30 text-sm font-light pt-2">
               <MapPin className="w-3.5 h-3.5" />
               <span>Based in New York · Available Globally</span>
@@ -685,19 +1123,19 @@ export function PortfolioCinematic({ projects, featureFilm }: PortfolioCinematic
               <div className="hidden sm:flex flex-col items-center gap-3 mt-1">
                 <button
                   onClick={() => document.getElementById("section-feature-film")?.scrollIntoView({ behavior: "smooth" })}
-                  className="w-2.5 h-2.5 rounded-full bg-white/25 hover:bg-cyan-400/60 transition-colors cursor-pointer"
+                  className={`w-2.5 h-2.5 rounded-full transition-colors cursor-pointer ${activeSection === 'section-feature-film' ? 'bg-cyan-400/80 scale-125' : 'bg-white/25 hover:bg-cyan-400/60'}`}
                   aria-label="Go to Feature Film"
                   title="Feature Film"
                 />
                 <button
                   onClick={() => document.getElementById("section-selected-work")?.scrollIntoView({ behavior: "smooth" })}
-                  className="w-2.5 h-2.5 rounded-full bg-white/25 hover:bg-purple-400/60 transition-colors cursor-pointer"
-                  aria-label="Go to Selected Work"
-                  title="Selected Work"
+                  className={`w-2.5 h-2.5 rounded-full transition-colors cursor-pointer ${activeSection === 'section-selected-work' ? 'bg-purple-400/80 scale-125' : 'bg-white/25 hover:bg-purple-400/60'}`}
+                  aria-label="Go to Productions"
+                  title="Productions"
                 />
                 <button
                   onClick={() => document.getElementById("section-experiential")?.scrollIntoView({ behavior: "smooth" })}
-                  className="w-2.5 h-2.5 rounded-full bg-white/25 hover:bg-pink-400/60 transition-colors cursor-pointer"
+                  className={`w-2.5 h-2.5 rounded-full transition-colors cursor-pointer ${activeSection === 'section-experiential' ? 'bg-pink-400/80 scale-125' : 'bg-white/25 hover:bg-pink-400/60'}`}
                   aria-label="Go to Experiential & Spatial"
                   title="Experiential & Spatial"
                 />

@@ -11,7 +11,7 @@ import still8 from "figma:asset/4218ec8aa55284a3900b9ead56ffdf244700a013.png";
 import still9 from "figma:asset/339adab3ccf3253155f0f1e57c10f934fec86064.png";
 
 // Selected work cover images
-import cover1 from "figma:asset/675720857b99a15db96b939a5a4f8da14356387b.png";
+import cover1 from "figma:asset/becd305df6fda9dce8940db24cf251328ce79df5.png";
 import cover2 from "figma:asset/bd17c2cff3ca0ae938c5751adb941dce66b8c7cf.png";
 import cover3 from "figma:asset/ceceb4c76fc7e64ce3d614f583fcfa64e3b6a4d3.png";
 import cover4 from "figma:asset/cd4934c32c42f61b3cb9a5efef97097383a30f64.png";
@@ -42,10 +42,7 @@ import lolStill1 from "figma:asset/e0a00bdb72b9487790ed46853c88e1eab9a9eb2f.png"
 import lolStill2 from "figma:asset/4b682e1e3ffa2df8195107143bec472396474e99.png";
 import lolStill3 from "figma:asset/ecc340f840ac6177ff6728063ff982734629073d.png";
 import lolStill4 from "figma:asset/f788a638efc3fe8dac73baeffcc3b32aff1dfd94.png";
-import lolStill5 from "figma:asset/5b4dca8dd28cfd1dc9fcf7b97d14f46c364eb95d.png";
-import lolStill6 from "figma:asset/e14956d6d556c5da65325ee417cdfd9dcdc093b9.png";
 import lolStill7 from "figma:asset/6de51ad52c9e5438900e8b89f599b9f128530482.png";
-import lolStill8 from "figma:asset/97e85d5feb80c38f8e4ac4102d9179abe4fcf118.png";
 
 // Naraka: Bladepoint Showdown stills
 import narakaStill1 from "figma:asset/6e457d078005774628dfe01dcd9fea6f3272cbb8.png";
@@ -142,6 +139,24 @@ import narakaAsianStill5 from "figma:asset/9bfe486661f7fa16b536f4eae9cf258e78999
 import narakaAsianStill6 from "figma:asset/83e845a7d0de57b2c4cbadb17fe48111605845a4.png";
 import narakaAsianStill7 from "figma:asset/882861f4eca89acf505f283d198ad7045c4927e1.png";
 
+// INNISFREE White Peony cover and stills
+import innisfreeCover from "figma:asset/21b1849eaf1f494708d2174790277c1e61554267.png";
+import innisfreeStill1 from "figma:asset/eec9659113f26e8eb633fde8daae19726c873b4c.png";
+import innisfreeStill2 from "figma:asset/767fe227ee4a65374380952f58bcf7c30e781b93.png";
+import innisfreeStill3 from "figma:asset/4b1317a86226f76200268389805b49c63044a756.png";
+import innisfreeStill4 from "figma:asset/076816a4d77e375cb2d0cf3727546cfd7bfd8479.png";
+import innisfreeStill5 from "figma:asset/ddd3805e099c60a972427a46a159dcb4eeba19ab.png";
+
+// Coach new cover image
+import coachNewCover from "figma:asset/aa34b5796594368577f1798de56200b94e227dad.png";
+
+// ZZZ Section 6 Unknown Footage cover and stills
+import zzzS6Cover from "figma:asset/c411ca874405664e4f7f8120c1ba30967e9219cf.png";
+import zzzS6Still1 from "figma:asset/b1c7fa0ff5e30e0e37e8c417761e4230ef500c8b.png";
+import zzzS6Still2 from "figma:asset/b25cdcf338a474a0e0499a843988ffe3ace72a0a.png";
+import zzzS6Still3 from "figma:asset/ef6270b661d274ea7a703570492078cd35732745.png";
+import zzzS6Still4 from "figma:asset/f3b91cb26ba9c5125e53d90d3eb39c238a572919.png";
+
 const featureFilm = {
   title: "Brief History of A Family",
   tagline: "A film by Lin Jianjie",
@@ -184,7 +199,7 @@ const projects = [
     production: "D'ELE",
     director: "Shigeto 'Rage' Sayama",
     credits: "Producer",
-    thumbnail: cover1,
+    thumbnail: coachNewCover,
     year: "2020",
     videoUrl: "https://vimeo.com/476258858",
     videoType: "vimeo" as const,
@@ -242,149 +257,6 @@ const projects = [
       beatsStill1,
       beatsStill2,
       beatsStill3
-    ]
-  },
-  {
-    id: "4",
-    name: "League of Legends Cinematics",
-    brandName: "TENCENT/RIOT GAMES",
-    projectTitle: "Lunar God Cinematic",
-    description: "World-Class Game Cinematics",
-    client: "Tencent/Riot Games",
-    agency: "Final Frontier",
-    production: "Final Frontier",
-    director: "Fernando Sawa",
-    credits: "Executive Producer",
-    thumbnail: cover3,
-    year: "2024",
-    videoUrl: "",
-    videoType: "vimeo" as const,
-    additionalImages: [
-      lolStill1,
-      lolStill2,
-      lolStill3,
-      lolStill4,
-      lolStill5,
-      lolStill6,
-      lolStill7,
-      lolStill8
-    ]
-  },
-  {
-    id: "5",
-    name: "Naraka: Bladepoint Showdown",
-    brandName: "NETEASE",
-    projectTitle: "Bladepoint Showdown",
-    description: "Epic Game Launch Campaign",
-    client: "NetEase",
-    agency: "Final Frontier",
-    production: "Final Frontier",
-    director: "LeCube",
-    credits: "Producer",
-    thumbnail: cover4,
-    videoUrl: "https://vimeo.com/797632305",
-    videoType: "vimeo" as const,
-    additionalImages: [
-      narakaStill1,
-      narakaStill2,
-      narakaStill3,
-      narakaStill4,
-      narakaStill5,
-      narakaStill6
-    ]
-  },
-  {
-    id: "14",
-    name: "NARAKA: Blade Point - Asian Games",
-    brandName: "NETEASE",
-    projectTitle: "Blade Point - Asian Games",
-    description: "Esports Tournament Campaign",
-    client: "NetEase",
-    agency: "Final Frontier",
-    production: "Final Frontier",
-    director: "Paolo Garcia",
-    credits: "Producer",
-    thumbnail: narakaAsianStill7,
-    year: "2023",
-    videoUrl: "https://vimeo.com/900714258",
-    videoType: "vimeo" as const,
-    additionalImages: [
-      narakaAsianCover,
-      narakaAsianStill1,
-      narakaAsianStill2,
-      narakaAsianStill3,
-      narakaAsianStill4,
-      narakaAsianStill5,
-      narakaAsianStill6
-    ]
-  },
-  {
-    id: "6",
-    name: "League of Legends Mobile Anniversary",
-    brandName: "TENCENT/RIOT GAMES",
-    projectTitle: "Mobile Anniversary Campaign",
-    description: "Milestone Celebration Content",
-    client: "Tencent/Riot Games",
-    agency: "Final Frontier",
-    production: "Final Frontier",
-    director: "LeCube",
-    credits: "Producer",
-    thumbnail: cover5New,
-    videoUrl: "https://vimeo.com/789921982",
-    videoType: "vimeo" as const,
-    additionalImages: [
-      lolMobileStill1,
-      lolMobileStill2,
-      lolMobileStill3,
-      lolMobileStill4,
-      lolMobileStill5,
-      lolMobileStill6
-    ]
-  },
-  {
-    id: "7",
-    name: "3i Brand Film",
-    brandName: "3I ROBOTICS",
-    projectTitle: "Brand Film",
-    description: "Technology Brand Storytelling",
-    client: "3i Robotics",
-    agency: "Final Frontier",
-    production: "Final Frontier",
-    director: "Frame",
-    credits: "Producer",
-    thumbnail: cover5,
-    videoUrl: "https://vimeo.com/893965010",
-    videoType: "vimeo" as const,
-    additionalImages: [
-      threeIStill1,
-      threeIStill2,
-      threeIStill3,
-      threeIStill4,
-      threeIStill5
-    ]
-  },
-  {
-    id: "8",
-    name: "Vivo S17",
-    brandName: "VIVO",
-    projectTitle: "S17 Product Launch",
-    description: "Premium Smartphone Campaign",
-    client: "vivo",
-    agency: "Final Frontier",
-    production: "Final Frontier",
-    director: "Pablo Alfieri",
-    credits: "Executive Producer",
-    thumbnail: cover6,
-    year: "2023",
-    videoUrl: "https://vimeo.com/838955474",
-    videoType: "vimeo" as const,
-    additionalImages: [
-      vivoS17Still1,
-      vivoS17Still2,
-      vivoS17Still3,
-      vivoS17Still4,
-      vivoS17Still5,
-      vivoS17Still6
     ]
   },
   {
@@ -452,45 +324,26 @@ const projects = [
     ]
   },
   {
-    id: "11",
-    name: "ZZZ - Tin Master Coffee Shop Film",
-    brandName: "MIHOYO",
-    projectTitle: "Tin Master Coffee Shop Film",
-    description: "Narrative-Driven Game Content",
-    client: "miHoYo",
+    id: "4",
+    name: "League of Legends Cinematics",
+    brandName: "TENCENT/RIOT GAMES",
+    projectTitle: "Lunar God Cinematic",
+    description: "World-Class Game Cinematics",
+    client: "Tencent/Riot Games",
     agency: "Final Frontier",
     production: "Final Frontier",
-    director: "Notan",
+    director: "Fernando Sawa",
     credits: "Executive Producer",
-    thumbnail: zzzCoffeeCover,
+    thumbnail: cover3,
     year: "2024",
-    videoUrl: "https://www.youtube.com/watch?v=6xj1f8AkAIU",
-    videoType: "youtube" as const,
+    videoUrl: "",
+    videoType: "vimeo" as const,
     additionalImages: [
-      zzzCoffeeStill1,
-      zzzCoffeeStill2,
-      zzzCoffeeStill3,
-      zzzCoffeeStill4,
-      zzzCoffeeStill5
-    ]
-  },
-  {
-    id: "12",
-    name: "Cosmetic Product Launch - Featuring Nana",
-    brandName: "KAFELLON",
-    projectTitle: "Product Launch feat. Nana",
-    description: "Celebrity Beauty Campaign",
-    client: "Kafellon",
-    agency: "Hong Luan Pin",
-    production: "D'ELE",
-    director: "Bosung Kim",
-    credits: "Producer",
-    thumbnail: cosmeticCover,
-    additionalImages: [
-      cosmeticStill1,
-      cosmeticStill2,
-      cosmeticStill3,
-      cosmeticStill4
+      lolStill1,
+      lolStill2,
+      lolStill3,
+      lolStill4,
+      lolStill7
     ]
   },
   {
@@ -560,13 +413,219 @@ const projects = [
       zhibenStill3,
       zhibenStill4
     ]
+  },
+  {
+    id: "5",
+    name: "Naraka: Bladepoint Showdown",
+    brandName: "NETEASE",
+    projectTitle: "Bladepoint Showdown",
+    description: "Epic Game Launch Campaign",
+    client: "NetEase",
+    agency: "Final Frontier",
+    production: "Final Frontier",
+    director: "LeCube",
+    credits: "Producer",
+    thumbnail: cover4,
+    videoUrl: "https://vimeo.com/797632305",
+    videoType: "vimeo" as const,
+    additionalImages: [
+      narakaStill1,
+      narakaStill2,
+      narakaStill3,
+      narakaStill4,
+      narakaStill5,
+      narakaStill6
+    ]
+  },
+  {
+    id: "7",
+    name: "3i Brand Film",
+    brandName: "3I ROBOTICS",
+    projectTitle: "Brand Film",
+    description: "Technology Brand Storytelling",
+    client: "3i Robotics",
+    agency: "Final Frontier",
+    production: "Final Frontier",
+    director: "Frame",
+    credits: "Producer",
+    thumbnail: cover5,
+    videoUrl: "https://vimeo.com/893965010",
+    videoType: "vimeo" as const,
+    additionalImages: [
+      threeIStill1,
+      threeIStill2,
+      threeIStill3,
+      threeIStill4,
+      threeIStill5
+    ]
+  },
+  {
+    id: "15",
+    name: "INNISFREE White Peony",
+    brandName: "INNISFREE",
+    projectTitle: "WHITE PEONY Ft. Zhu Zhengting",
+    description: "Celebrity Skincare Campaign",
+    client: "INNISFREE",
+    agency: "ORES",
+    production: "First Light Films",
+    director: "Alvynn Diagne",
+    credits: "Executive Producer",
+    thumbnail: innisfreeStill2,
+    videoUrl: "https://vimeo.com/1174256822",
+    videoType: "vimeo" as const,
+    additionalImages: [
+      innisfreeStill1,
+      innisfreeCover,
+      innisfreeStill3,
+      innisfreeStill4,
+      innisfreeStill5
+    ]
+  },
+  {
+    id: "8",
+    name: "Vivo S17",
+    brandName: "VIVO",
+    projectTitle: "S17 Product Launch",
+    description: "Premium Smartphone Campaign",
+    client: "vivo",
+    agency: "Final Frontier",
+    production: "Final Frontier",
+    director: "Pablo Alfieri",
+    credits: "Executive Producer",
+    thumbnail: cover6,
+    year: "2023",
+    videoUrl: "https://vimeo.com/838955474",
+    videoType: "vimeo" as const,
+    additionalImages: [
+      vivoS17Still1,
+      vivoS17Still3,
+      vivoS17Still4,
+      vivoS17Still2,
+      vivoS17Still5,
+      vivoS17Still6
+    ]
+  },
+  {
+    id: "6",
+    name: "League of Legends Mobile Anniversary",
+    brandName: "TENCENT/RIOT GAMES",
+    projectTitle: "Mobile Anniversary Campaign",
+    description: "Milestone Celebration Content",
+    client: "Tencent/Riot Games",
+    agency: "Final Frontier",
+    production: "Final Frontier",
+    director: "LeCube",
+    credits: "Producer",
+    thumbnail: cover5New,
+    videoUrl: "https://vimeo.com/789921982",
+    videoType: "vimeo" as const,
+    additionalImages: [
+      lolMobileStill1,
+      lolMobileStill2,
+      lolMobileStill3,
+      lolMobileStill4,
+      lolMobileStill5,
+      lolMobileStill6
+    ]
+  },
+  {
+    id: "14",
+    name: "NARAKA: Blade Point - Asian Games",
+    brandName: "NETEASE",
+    projectTitle: "Blade Point - Asian Games",
+    description: "Esports Tournament Campaign",
+    client: "NetEase",
+    agency: "Final Frontier",
+    production: "Final Frontier",
+    director: "Paolo Garcia",
+    credits: "Producer",
+    thumbnail: narakaAsianStill7,
+    year: "2023",
+    videoUrl: "https://vimeo.com/900714258",
+    videoType: "vimeo" as const,
+    additionalImages: [
+      narakaAsianCover,
+      narakaAsianStill1,
+      narakaAsianStill2,
+      narakaAsianStill3,
+      narakaAsianStill4,
+      narakaAsianStill5,
+      narakaAsianStill6
+    ]
+  },
+  {
+    id: "11",
+    name: "ZZZ - Tin Master Coffee Shop Film",
+    brandName: "MIHOYO",
+    projectTitle: "Tin Master Coffee Shop Film",
+    description: "Narrative-Driven Game Content",
+    client: "miHoYo",
+    agency: "Final Frontier",
+    production: "Final Frontier",
+    director: "Notan",
+    credits: "Executive Producer",
+    thumbnail: zzzCoffeeCover,
+    year: "2024",
+    videoUrl: "https://www.youtube.com/watch?v=6xj1f8AkAIU",
+    videoType: "youtube" as const,
+    additionalImages: [
+      zzzCoffeeStill1,
+      zzzCoffeeStill4,
+      zzzCoffeeStill2,
+      zzzCoffeeStill3,
+      zzzCoffeeStill5
+    ]
+  },
+  {
+    id: "12",
+    name: "Cosmetic Product Launch - Featuring Nana",
+    brandName: "KAFELLON",
+    projectTitle: "Product Launch feat. Nana",
+    description: "Celebrity Beauty Campaign",
+    client: "Kafellon",
+    agency: "Hong Luan Pin",
+    production: "D'ELE",
+    director: "Bosung Kim",
+    credits: "Producer",
+    thumbnail: cosmeticCover,
+    additionalImages: [
+      cosmeticStill1,
+      cosmeticStill2,
+      cosmeticStill3,
+      cosmeticStill4
+    ]
+  },
+  {
+    id: "16",
+    name: "ZZZ Section 6 Unknown Footage",
+    brandName: "MIHOYO",
+    projectTitle: "Section 6 Unknown Footage",
+    description: "A Controlled Chaos to Showcase Members of Section 6",
+    client: "miHoYo",
+    agency: "Final Frontier",
+    production: "Final Frontier",
+    director: "Toggle",
+    credits: "Executive Producer",
+    thumbnail: zzzS6Cover,
+    year: "2025",
+    videoUrl: "https://vimeo.com/1174401204",
+    videoType: "vimeo" as const,
+    additionalImages: [
+      zzzS6Still1,
+      zzzS6Still2,
+      zzzS6Still3,
+      zzzS6Still4
+    ]
   }
 ];
 
 export default function App() {
   return (
     <div className="min-h-screen">
-      <PortfolioCinematic projects={projects} featureFilm={featureFilm} />
+      <PortfolioCinematic
+        projects={projects}
+        featureFilm={featureFilm}
+      />
     </div>
   );
 }
