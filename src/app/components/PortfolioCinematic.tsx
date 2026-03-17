@@ -576,7 +576,7 @@ export function PortfolioCinematic({ projects, showreelUrl, featureFilm }: Portf
   const [selectedSeriesVideo, setSelectedSeriesVideo] = useState<{ url: string; type: "direct" | "youtube" | "vimeo" } | null>(null);
   const [enlargedStill, setEnlargedStill] = useState<{ src: string; images: string[]; index: number } | null>(null);
   const [showBackToTop, setShowBackToTop] = useState(false);
-  const [scrollProgress, setScrollProgress] = useState(0);
+  const progressBarRef = useRef<HTMLDivElement>(null);
   const [showNav, setShowNav] = useState(false);
   const [activeSection, setActiveSection] = useState("");
   const [introComplete, setIntroComplete] = useState(false);
@@ -613,23 +613,35 @@ export function PortfolioCinematic({ projects, showreelUrl, featureFilm }: Portf
   // ── Scroll handler: back-to-top + progress bar + sticky nav + active section ──
   useEffect(() => {
     const sectionIds = ["section-feature-film", "section-selected-work", "section-experiential", "section-contact"];
+    let rafId = 0;
     const handleScroll = () => {
-      const scrollY = window.scrollY;
-      setShowBackToTop(scrollY > window.innerHeight);
-      setShowNav(scrollY > window.innerHeight * 0.8);
-      const docHeight = document.documentElement.scrollHeight - window.innerHeight;
-      setScrollProgress(docHeight > 0 ? (scrollY / docHeight) * 100 : 0);
+      if (rafId) return;
+      rafId = requestAnimationFrame(() => {
+        rafId = 0;
+        const scrollY = window.scrollY;
+        setShowBackToTop(scrollY > window.innerHeight);
+        setShowNav(scrollY > window.innerHeight * 0.8);
 
-      // Determine active section
-      let current = "";
-      for (const id of sectionIds) {
-        const el = document.getElementById(id);
-        if (el && scrollY >= el.offsetTop - 200) current = id;
-      }
-      setActiveSection(current);
+        // Direct DOM update for progress bar — no re-render needed
+        const docHeight = document.documentElement.scrollHeight - window.innerHeight;
+        if (progressBarRef.current) {
+          progressBarRef.current.style.width = `${docHeight > 0 ? (scrollY / docHeight) * 100 : 0}%`;
+        }
+
+        // Determine active section
+        let current = "";
+        for (const id of sectionIds) {
+          const el = document.getElementById(id);
+          if (el && scrollY >= el.offsetTop - 200) current = id;
+        }
+        setActiveSection(current);
+      });
     };
     window.addEventListener("scroll", handleScroll, { passive: true });
-    return () => window.removeEventListener("scroll", handleScroll);
+    return () => {
+      window.removeEventListener("scroll", handleScroll);
+      if (rafId) cancelAnimationFrame(rafId);
+    };
   }, []);
 
   // ── Gallery navigation ──
@@ -728,7 +740,7 @@ export function PortfolioCinematic({ projects, showreelUrl, featureFilm }: Portf
       <StickyNav show={showNav} activeSection={activeSection} />
 
       {/* Scroll Progress Bar */}
-      <div className="scroll-progress" style={{ width: `${scrollProgress}%` }} />
+      <div ref={progressBarRef} className="scroll-progress" style={{ width: '0%' }} />
 
       {/* Decorative Color Spots — Animated */}
       <div className="fixed top-20 right-1/4 w-96 h-96 bg-purple-500/20 rounded-full blur-3xl pointer-events-none animate-orb-1" />
