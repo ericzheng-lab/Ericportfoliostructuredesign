@@ -134,6 +134,14 @@
     font-family: var(--font-sans);
   }
 
+  /* Custom cinematic cursor – only on fine-pointer (desktop) devices */
+  @media (pointer: fine) {
+    body,
+    a, button, [role="button"], input, select, textarea, [tabindex] {
+      cursor: none;
+    }
+  }
+
   /**
   * Default typography styles for HTML elements (h1-h4, p, label, button, input).
   * These are in @layer base, so Tailwind utility classes (like text-sm, text-lg) automatically override them.
@@ -142,6 +150,8 @@
   html {
     font-size: var(--font-size);
     font-family: var(--font-sans);
+    scroll-behavior: smooth;
+    scroll-padding-top: 2rem;
   }
 
   h1 {
@@ -199,4 +209,45 @@
   p {
     font-family: var(--font-sans);
   }
+}
+
+/* ── Scrollbar Hide ── */
+.scrollbar-hide {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+.scrollbar-hide::-webkit-scrollbar {
+  display: none;
+}
+
+/* ── Floating Orb Animation ── */
+@keyframes orb-float-1 {
+  0%, 100% { transform: translate(0, 0) scale(1); }
+  33% { transform: translate(30px, -20px) scale(1.05); }
+  66% { transform: translate(-20px, 15px) scale(0.95); }
+}
+@keyframes orb-float-2 {
+  0%, 100% { transform: translate(0, 0) scale(1); }
+  33% { transform: translate(-25px, 25px) scale(0.96); }
+  66% { transform: translate(15px, -30px) scale(1.04); }
+}
+@keyframes orb-float-3 {
+  0%, 100% { transform: translate(0, 0) scale(1); }
+  33% { transform: translate(20px, 20px) scale(1.03); }
+  66% { transform: translate(-30px, -10px) scale(0.97); }
+}
+.animate-orb-1 { animation: orb-float-1 12s ease-in-out infinite; }
+.animate-orb-2 { animation: orb-float-2 15s ease-in-out infinite; }
+.animate-orb-3 { animation: orb-float-3 18s ease-in-out infinite; }
+
+/* ── Scroll Progress Bar ── */
+.scroll-progress {
+  position: fixed;
+  top: 0;
+  left: 0;
+  height: 2px;
+  background: linear-gradient(90deg, #22d3ee, #a855f7, #ec4899);
+  z-index: 9999;
+  transition: width 50ms linear;
+  pointer-events: none;
 }

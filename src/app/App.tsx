@@ -44,6 +44,8 @@ import lolStill3 from "figma:asset/ecc340f840ac6177ff6728063ff982734629073d.png"
 import lolStill4 from "figma:asset/f788a638efc3fe8dac73baeffcc3b32aff1dfd94.png";
 import lolStill5 from "figma:asset/5b4dca8dd28cfd1dc9fcf7b97d14f46c364eb95d.png";
 import lolStill6 from "figma:asset/e14956d6d556c5da65325ee417cdfd9dcdc093b9.png";
+import lolStill7 from "figma:asset/6de51ad52c9e5438900e8b89f599b9f128530482.png";
+import lolStill8 from "figma:asset/97e85d5feb80c38f8e4ac4102d9179abe4fcf118.png";
 
 // Naraka: Bladepoint Showdown stills
 import narakaStill1 from "figma:asset/6e457d078005774628dfe01dcd9fea6f3272cbb8.png";
@@ -61,7 +63,7 @@ import threeIStill4 from "figma:asset/5c2a0f99854a89ba4a699ecc8a90ca60dc38963b.p
 import threeIStill5 from "figma:asset/675cbc90bd0846f7192b196136c393b39ad1ca16.png";
 
 // BEATS Flex Earphones cover and stills
-import beatsCover from "figma:asset/b9597e5a82884f9869c1130378f1a21968903d5d.png";
+import beatsCover from "figma:asset/3c11112f72247101909dcd07fab2dcf92901984b.png";
 import beatsStill1 from "figma:asset/a76d16a82f3dcbe45f504595094b8f4e4de1fe93.png";
 import beatsStill2 from "figma:asset/ca78413ebdf90b965ffe7b46598585cddcfcd4aa.png";
 import beatsStill3 from "figma:asset/2359a13a71f1edcb579dd046c2f7129f25a35a1b.png";
@@ -108,6 +110,12 @@ import zhibenStill4 from "figma:asset/7871436f05673cb34255aa4503d5acc27e05562e.p
 import zhibenStill5 from "figma:asset/5a3528b3fb04579029965b741c8b945380afe568.png";
 import zhibenStill6 from "figma:asset/4126b440379aac8a7081b801ca3785274fb81f48.png";
 import zhibenStill7 from "figma:asset/1649a8ed4b6755c9c30099619840cc8a59d34dce.png";
+import zhibenNewStill from "figma:asset/942a368c3cf73c559af8d7c8fbe7f6f9d34e3706.png";
+import zhibenStill8 from "figma:asset/4d5665bc7920f98edca3cbc8428fb2916e533bed.png";
+import zhibenStill9 from "figma:asset/af1fdc7777f00a70c603d15b95f3dd3c4ee8ec7e.png";
+import zhibenStill10 from "figma:asset/7ddc7a9b0479bb3d269cfaa9e6d1321f1fbde030.png";
+import zhibenStill11 from "figma:asset/e45f5f724ec1e5c78997a8e5dc46d136ac3f969c.png";
+import zhibenStill12 from "figma:asset/f3b6143fd1be50e318e10bcee38f08d94b6a7e7c.png";
 
 // Honkai Clockboy stills
 import honkaiCover from "figma:asset/dbe10da11185585d62b02247cdb2c36841fdab21.png";
@@ -115,6 +123,24 @@ import honkaiStill1 from "figma:asset/4f57631cd83e53fd69efd4b363e53e73a0b71bc6.p
 import honkaiStill2 from "figma:asset/cc031a10d7b563ebd21d4ac3a4bd7e0f5d82aa39.png";
 import honkaiStill3 from "figma:asset/2d4d9a2afc732c7517861946d541c60ad3fa0bcd.png";
 import honkaiStill4 from "figma:asset/44fdae15a756b3a05d97d9128f88c72c98e096fe.png";
+
+// ZZZ - Tin Master Coffee Shop Film cover and stills
+import zzzCoffeeCover from "figma:asset/91469eacdb055e23e7cd389923e599b1496a3528.png";
+import zzzCoffeeStill1 from "figma:asset/a9ddfd2fe24be7b7326c144807b9fc59d7c0c4d5.png";
+import zzzCoffeeStill2 from "figma:asset/2523a87f75b9eae22df338d9b6acbc99234237db.png";
+import zzzCoffeeStill3 from "figma:asset/953b8f496d56a527412f8ddc8fb16924b5c90a87.png";
+import zzzCoffeeStill4 from "figma:asset/b2481e481bc78aa60a414fa2cf0ace6ffee19442.png";
+import zzzCoffeeStill5 from "figma:asset/a63afa1efbdd4afdb86c5b5fcc59df69b1d0c1e6.png";
+
+// NARAKA: Blade Point - Asian Games
+import narakaAsianCover from "figma:asset/257bf3925d97d8018803ed2d7147116a104fddc0.png";
+import narakaAsianStill1 from "figma:asset/67d4c738e5029b19fdaed9ad25f1b428862ad567.png";
+import narakaAsianStill2 from "figma:asset/392a24692c820134f9832ced145efbaa535a6988.png";
+import narakaAsianStill3 from "figma:asset/00837fb8d28879bb362c6f769bd7d5fa860dcf88.png";
+import narakaAsianStill4 from "figma:asset/ddc5eff031e96cd056648e9c2eb71cdaa060b5e8.png";
+import narakaAsianStill5 from "figma:asset/9bfe486661f7fa16b536f4eae9cf258e78999603.png";
+import narakaAsianStill6 from "figma:asset/83e845a7d0de57b2c4cbadb17fe48111605845a4.png";
+import narakaAsianStill7 from "figma:asset/882861f4eca89acf505f283d198ad7045c4927e1.png";
 
 const featureFilm = {
   title: "Brief History of A Family",
@@ -150,33 +176,41 @@ const projects = [
   {
     id: "1",
     name: "Coach Brand Film",
+    brandName: "COACH",
+    projectTitle: "Brand Film",
+    description: "Premium Fashion Campaign",
     client: "COACH",
     agency: "Hantang Culture",
     production: "D'ELE",
     director: "Shigeto 'Rage' Sayama",
-    credits: "Executive Producer",
+    credits: "Producer",
     thumbnail: cover1,
+    year: "2020",
     videoUrl: "https://vimeo.com/476258858",
     videoType: "vimeo" as const,
     additionalImages: [
-      coachStill3,
-      coachStill6,
-      coachStill7,
       coachStill1,
       coachStill2,
+      coachStill3,
       coachStill4,
-      coachStill5
+      coachStill5,
+      coachStill6,
+      coachStill7
     ]
   },
   {
     id: "2",
     name: "Dungeon Fighter Cinematics",
+    brandName: "TENCENT",
+    projectTitle: "Dungeon Fighter Cinematics",
+    description: "High-Impact Game Cinematics",
     client: "TENCENT",
     agency: "Final Frontier",
     production: "Final Frontier",
     director: "Hanzo",
     credits: "Executive Producer",
     thumbnail: cover2,
+    year: "2024",
     videoUrl: "https://vimeo.com/1090618108",
     videoType: "vimeo" as const,
     additionalImages: [
@@ -192,12 +226,16 @@ const projects = [
   {
     id: "3",
     name: "BEATS Flex Earphones",
+    brandName: "BEATS",
+    projectTitle: "Flex Earphones Campaign",
+    description: "Premium Audio Product Launch",
     client: "BEATS",
     agency: "Campfire",
     production: "First Light Films",
     director: "Dan Zhao",
-    credits: "Executive Producer",
+    credits: "Producer",
     thumbnail: beatsCover,
+    year: "2021",
     videoUrl: "https://vimeo.com/1172775488",
     videoType: "vimeo" as const,
     additionalImages: [
@@ -209,12 +247,16 @@ const projects = [
   {
     id: "4",
     name: "League of Legends Cinematics",
+    brandName: "TENCENT/RIOT GAMES",
+    projectTitle: "Lunar God Cinematic",
+    description: "World-Class Game Cinematics",
     client: "Tencent/Riot Games",
     agency: "Final Frontier",
     production: "Final Frontier",
     director: "Fernando Sawa",
     credits: "Executive Producer",
     thumbnail: cover3,
+    year: "2024",
     videoUrl: "",
     videoType: "vimeo" as const,
     additionalImages: [
@@ -223,17 +265,22 @@ const projects = [
       lolStill3,
       lolStill4,
       lolStill5,
-      lolStill6
+      lolStill6,
+      lolStill7,
+      lolStill8
     ]
   },
   {
     id: "5",
     name: "Naraka: Bladepoint Showdown",
+    brandName: "NETEASE",
+    projectTitle: "Bladepoint Showdown",
+    description: "Epic Game Launch Campaign",
     client: "NetEase",
     agency: "Final Frontier",
     production: "Final Frontier",
     director: "LeCube",
-    credits: "Executive Producer",
+    credits: "Producer",
     thumbnail: cover4,
     videoUrl: "https://vimeo.com/797632305",
     videoType: "vimeo" as const,
@@ -247,13 +294,41 @@ const projects = [
     ]
   },
   {
+    id: "14",
+    name: "NARAKA: Blade Point - Asian Games",
+    brandName: "NETEASE",
+    projectTitle: "Blade Point - Asian Games",
+    description: "Esports Tournament Campaign",
+    client: "NetEase",
+    agency: "Final Frontier",
+    production: "Final Frontier",
+    director: "Paolo Garcia",
+    credits: "Producer",
+    thumbnail: narakaAsianStill7,
+    year: "2023",
+    videoUrl: "https://vimeo.com/900714258",
+    videoType: "vimeo" as const,
+    additionalImages: [
+      narakaAsianCover,
+      narakaAsianStill1,
+      narakaAsianStill2,
+      narakaAsianStill3,
+      narakaAsianStill4,
+      narakaAsianStill5,
+      narakaAsianStill6
+    ]
+  },
+  {
     id: "6",
     name: "League of Legends Mobile Anniversary",
+    brandName: "TENCENT/RIOT GAMES",
+    projectTitle: "Mobile Anniversary Campaign",
+    description: "Milestone Celebration Content",
     client: "Tencent/Riot Games",
     agency: "Final Frontier",
     production: "Final Frontier",
     director: "LeCube",
-    credits: "Executive Producer",
+    credits: "Producer",
     thumbnail: cover5New,
     videoUrl: "https://vimeo.com/789921982",
     videoType: "vimeo" as const,
@@ -269,11 +344,14 @@ const projects = [
   {
     id: "7",
     name: "3i Brand Film",
+    brandName: "3I ROBOTICS",
+    projectTitle: "Brand Film",
+    description: "Technology Brand Storytelling",
     client: "3i Robotics",
     agency: "Final Frontier",
     production: "Final Frontier",
     director: "Frame",
-    credits: "Executive Producer",
+    credits: "Producer",
     thumbnail: cover5,
     videoUrl: "https://vimeo.com/893965010",
     videoType: "vimeo" as const,
@@ -288,12 +366,16 @@ const projects = [
   {
     id: "8",
     name: "Vivo S17",
+    brandName: "VIVO",
+    projectTitle: "S17 Product Launch",
+    description: "Premium Smartphone Campaign",
     client: "vivo",
     agency: "Final Frontier",
     production: "Final Frontier",
     director: "Pablo Alfieri",
     credits: "Executive Producer",
     thumbnail: cover6,
+    year: "2023",
     videoUrl: "https://vimeo.com/838955474",
     videoType: "vimeo" as const,
     additionalImages: [
@@ -308,12 +390,16 @@ const projects = [
   {
     id: "9",
     name: "vivo X80/90/100 Series",
+    brandName: "VIVO",
+    projectTitle: "X Series Multi-Year Campaign",
+    description: "Flagship Product Storytelling",
     client: "vivo",
-    agency: "Final Frontier",
+    agency: "KARMA",
     production: "Final Frontier",
     director: "Paolo Garcia",
     credits: "Executive Producer",
     thumbnail: vivoXSeriesCover,
+    year: "2022-2024",
     videoSeries: [
       {
         name: "X80",
@@ -346,13 +432,17 @@ const projects = [
   {
     id: "10",
     name: "Honkai - Clockboy World",
+    brandName: "MIHOYO",
+    projectTitle: "Clockboy World Cinematic",
+    description: "Character-Driven Game Content",
     client: "miHoYo",
     agency: "Final Frontier",
     production: "Final Frontier",
     director: "Salvador Simó",
     credits: "Executive Producer",
     thumbnail: honkaiCover,
-    videoUrl: "",
+    year: "2024",
+    videoUrl: "https://vimeo.com/924606118",
     videoType: "vimeo" as const,
     additionalImages: [
       honkaiStill1,
@@ -364,30 +454,38 @@ const projects = [
   {
     id: "11",
     name: "ZZZ - Tin Master Coffee Shop Film",
+    brandName: "MIHOYO",
+    projectTitle: "Tin Master Coffee Shop Film",
+    description: "Narrative-Driven Game Content",
     client: "miHoYo",
     agency: "Final Frontier",
     production: "Final Frontier",
     director: "Notan",
     credits: "Executive Producer",
-    thumbnail: "https://images.unsplash.com/photo-1750243711894-869aeea522ea?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxjb2ZmZWUlMjBzaG9wJTIwdXJiYW4lMjBhbmltZXxlbnwxfHx8fDE3NzMyODY5OTV8MA&ixlib=rb-4.1.0&q=80&w=1080",
+    thumbnail: zzzCoffeeCover,
+    year: "2024",
     videoUrl: "https://www.youtube.com/watch?v=6xj1f8AkAIU",
     videoType: "youtube" as const,
     additionalImages: [
-      "https://images.unsplash.com/photo-1750243711894-869aeea522ea?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxjb2ZmZWUlMjBzaG9wJTIwdXJiYW4lMjBhbmltZXxlbnwxfHx8fDE3NzMyODY5OTV8MA&ixlib=rb-4.1.0&q=80&w=1080",
-      "https://images.unsplash.com/photo-1713181011134-f57327f93f8f?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxhbmltZSUyMHN0ZWFtcHVuayUyMGNsb2Nrd29ya3xlbnwxfHx8fDE3NzMyODY5OTV8MA&ixlib=rb-4.1.0&q=80&w=1080"
+      zzzCoffeeStill1,
+      zzzCoffeeStill2,
+      zzzCoffeeStill3,
+      zzzCoffeeStill4,
+      zzzCoffeeStill5
     ]
   },
   {
     id: "12",
     name: "Cosmetic Product Launch - Featuring Nana",
+    brandName: "KAFELLON",
+    projectTitle: "Product Launch feat. Nana",
+    description: "Celebrity Beauty Campaign",
     client: "Kafellon",
     agency: "Hong Luan Pin",
     production: "D'ELE",
     director: "Bosung Kim",
-    credits: "Executive Producer",
+    credits: "Producer",
     thumbnail: cosmeticCover,
-    videoUrl: "",
-    videoType: "vimeo" as const,
     additionalImages: [
       cosmeticStill1,
       cosmeticStill2,
@@ -397,43 +495,70 @@ const projects = [
   },
   {
     id: "13",
-    name: "ZHIBEN & YIFINITE : Brand Visual Identity",
-    subtitle: "Ongoing Production Partnership for Premium Skincare Content",
+    name: "ZHIBEN & YIFINITE: Brand Visual Identity",
+    brandName: "ZHIBEN & YIFINITE",
+    projectTitle: "Brand Visual Identity",
+    description: "Ongoing Production Partnership for Premium Skincare Content",
     client: "ZHIBEN & YIFINITE",
     agency: "D'ELE",
     production: "D'ELE",
-    director: "Various",
+    director: "FRAME, Serial Cut, Pablo Alfieri, Verso",
     credits: "Executive Producer",
     thumbnail: zhibenCover,
+    year: "2024-Present",
     videoSeries: [
       {
-        name: "ZHIBEN",
-        url: "",
+        name: "ZHIBEN 1",
+        url: "https://vimeo.com/800446126",
         type: "vimeo" as const,
         thumbnail: zhibenCover
       },
       {
-        name: "YIFINITE",
-        url: "",
+        name: "ZHIBEN 2",
+        url: "https://vimeo.com/772413416",
         type: "vimeo" as const,
-        thumbnail: zhibenStill2
+        thumbnail: zhibenNewStill
       },
       {
-        name: "Product",
-        url: "",
+        name: "ZHIBEN 3",
+        url: "https://vimeo.com/848745320",
+        type: "vimeo" as const,
+        thumbnail: zhibenStill5
+      },
+      {
+        name: "YIFINITE 1",
+        url: "https://vimeo.com/808987217",
         type: "vimeo" as const,
         thumbnail: zhibenStill3
+      },
+      {
+        name: "YIFINITE 2",
+        url: "https://vimeo.com/1017131650",
+        type: "vimeo" as const,
+        thumbnail: zhibenStill4
+      },
+      {
+        name: "YIFINITE 3",
+        url: "https://vimeo.com/1017137078",
+        type: "vimeo" as const,
+        thumbnail: zhibenStill2
       }
     ],
     additionalImages: [
-      zhibenCover,
+      zhibenStill10,
       zhibenStill1,
+      zhibenStill5,
+      zhibenStill11,
+      zhibenStill12,
+      zhibenStill7,
+      zhibenStill6,
+      zhibenNewStill,
+      zhibenStill8,
+      zhibenStill9,
+      zhibenCover,
       zhibenStill2,
       zhibenStill3,
-      zhibenStill4,
-      zhibenStill5,
-      zhibenStill6,
-      zhibenStill7
+      zhibenStill4
     ]
   }
 ];
