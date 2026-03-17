@@ -37,7 +37,7 @@ import silkNightExterior from "figma:asset/e9c8844245a63f761e132c617fdc62659fbb9
 
 /* ──────────────────────────────────────────────────────────
    1. ONE PARK CAMBODIA – 3-column collage (large left, two right)
-   ────────────────────────────────────────��───────────────── */
+   ───────────────────────────────────────────────────────── */
 function OneParkCambodiaCard() {
   return (
     <motion.div {...FADE_UP} className="group">
@@ -165,7 +165,7 @@ function DesignShanghaiCard() {
       <div className="mt-4 sm:mt-6 flex flex-wrap gap-4 sm:gap-6 md:gap-10">
         {[
           { label: "Scale", value: "9m × 9m Installation" },
-          { label: "Event", value: "Design Shanghai 2021" },
+          { label: "Event", value: "Design Shanghai" },
           { label: "Concept", value: "Seesaw Roundtable · Spatial Reconstruction" },
         ].map((m) => (
           <div key={m.label} className="flex flex-col gap-1">

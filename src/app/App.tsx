@@ -1,4 +1,5 @@
 import { PortfolioCinematic } from "./components/PortfolioCinematic";
+import { useEffect } from "react";
 import posterImage from "figma:asset/f542fa3f51613c8126bd7b41ea0ffdf8dce0958d.png";
 import still1 from "figma:asset/265f376dc6addb05ee2112d4f30f69dab9efcd12.png";
 import still2 from "figma:asset/6e6b0851db1d63b1c4b0d870ce36328403212aba.png";
@@ -151,7 +152,7 @@ import innisfreeStill5 from "figma:asset/ddd3805e099c60a972427a46a159dcb4eeba19a
 import coachNewCover from "figma:asset/aa34b5796594368577f1798de56200b94e227dad.png";
 
 // ZZZ Section 6 Unknown Footage cover and stills
-import zzzS6Cover from "figma:asset/c411ca874405664e4f7f8120c1ba30967e9219cf.png";
+import zzzS6Cover from "figma:asset/2083ff776ca2a53e207d89845cbc81e527ab49c6.png";
 import zzzS6Still1 from "figma:asset/b1c7fa0ff5e30e0e37e8c417761e4230ef500c8b.png";
 import zzzS6Still2 from "figma:asset/b25cdcf338a474a0e0499a843988ffe3ace72a0a.png";
 import zzzS6Still3 from "figma:asset/ef6270b661d274ea7a703570492078cd35732745.png";
@@ -351,7 +352,7 @@ const projects = [
     name: "ZHIBEN & YIFINITE: Brand Visual Identity",
     brandName: "ZHIBEN & YIFINITE",
     projectTitle: "Brand Visual Identity",
-    description: "Ongoing Production Partnership for Premium Skincare Content",
+    description: "Multi-year Production Partnership for Premium Skincare Content",
     client: "ZHIBEN & YIFINITE",
     agency: "D'ELE",
     production: "D'ELE",
@@ -544,12 +545,12 @@ const projects = [
     videoUrl: "https://vimeo.com/900714258",
     videoType: "vimeo" as const,
     additionalImages: [
+      narakaAsianStill5,
       narakaAsianCover,
       narakaAsianStill1,
       narakaAsianStill2,
       narakaAsianStill3,
       narakaAsianStill4,
-      narakaAsianStill5,
       narakaAsianStill6
     ]
   },
@@ -620,6 +621,50 @@ const projects = [
 ];
 
 export default function App() {
+  // ── SEO: Set document title, lang, and meta tags ──
+  useEffect(() => {
+    document.title = "Eric Zheng | Global Producer — Film & Commercial Production";
+    document.documentElement.lang = "en";
+
+    // Preload critical font files for faster first paint
+    const fontPreloads = [
+      "https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@300;400;600&display=swap",
+      "https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600&display=swap",
+    ];
+    fontPreloads.forEach(href => {
+      if (!document.querySelector(`link[href="${href}"]`)) {
+        const link = document.createElement("link");
+        link.rel = "preload";
+        link.as = "style";
+        link.href = href;
+        document.head.appendChild(link);
+      }
+    });
+
+    const metaTags: Record<string, string> = {
+      "description": "Award-winning global producer bridging cinematic storytelling and premium brand campaigns. Credits include Sundance, Berlin, Beats, Coach, Tencent, Riot Games, and miHoYo.",
+      "og:title": "Eric Zheng | Global Producer",
+      "og:description": "Award-winning producer with 15+ years scaling multi-million-dollar productions across US, Europe, and APAC. Sundance & Berlin selected.",
+      "og:type": "website",
+      "og:site_name": "Eric Zheng Portfolio",
+      "twitter:card": "summary_large_image",
+      "twitter:title": "Eric Zheng | Global Producer",
+      "twitter:description": "Film & Commercial Producer — Sundance, Berlin, Beats, Coach, Tencent, Riot Games",
+    };
+
+    Object.entries(metaTags).forEach(([name, content]) => {
+      const isOg = name.startsWith("og:") || name.startsWith("twitter:");
+      const attr = isOg ? "property" : "name";
+      let meta = document.querySelector(`meta[${attr}="${name}"]`) as HTMLMetaElement | null;
+      if (!meta) {
+        meta = document.createElement("meta");
+        meta.setAttribute(attr, name);
+        document.head.appendChild(meta);
+      }
+      meta.content = content;
+    });
+  }, []);
+
   return (
     <div className="min-h-screen">
       <PortfolioCinematic

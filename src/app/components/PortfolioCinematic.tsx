@@ -11,6 +11,63 @@ import { motion, AnimatePresence } from "motion/react";
 const VIEWPORT_ONCE = { once: true, margin: "-100px" as const };
 const FADE_UP = { initial: { opacity: 0, y: 40 }, whileInView: { opacity: 1, y: 0 }, transition: { duration: 0.8 }, viewport: VIEWPORT_ONCE };
 
+// ── Body scroll lock utility ──
+function useBodyScrollLock(isLocked: boolean) {
+  useEffect(() => {
+    if (isLocked) {
+      const scrollY = window.scrollY;
+      document.body.style.position = 'fixed';
+      document.body.style.top = `-${scrollY}px`;
+      document.body.style.left = '0';
+      document.body.style.right = '0';
+      document.body.style.overflow = 'hidden';
+      return () => {
+        document.body.style.position = '';
+        document.body.style.top = '';
+        document.body.style.left = '';
+        document.body.style.right = '';
+        document.body.style.overflow = '';
+        window.scrollTo(0, scrollY);
+      };
+    }
+  }, [isLocked]);
+}
+
+// ── Focus trap hook for modals ──
+function useFocusTrap(isActive: boolean, containerRef: React.RefObject<HTMLElement | null>) {
+  useEffect(() => {
+    if (!isActive || !containerRef.current) return;
+    const container = containerRef.current;
+    const focusableSelector = 'button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])';
+    const previouslyFocused = document.activeElement as HTMLElement;
+
+    // Focus the first focusable element
+    requestAnimationFrame(() => {
+      const firstFocusable = container.querySelector<HTMLElement>(focusableSelector);
+      firstFocusable?.focus();
+    });
+
+    const handleTab = (e: KeyboardEvent) => {
+      if (e.key !== 'Tab') return;
+      const focusableElements = container.querySelectorAll<HTMLElement>(focusableSelector);
+      if (focusableElements.length === 0) return;
+      const first = focusableElements[0];
+      const last = focusableElements[focusableElements.length - 1];
+      if (e.shiftKey) {
+        if (document.activeElement === first) { e.preventDefault(); last.focus(); }
+      } else {
+        if (document.activeElement === last) { e.preventDefault(); first.focus(); }
+      }
+    };
+
+    document.addEventListener('keydown', handleTab);
+    return () => {
+      document.removeEventListener('keydown', handleTab);
+      previouslyFocused?.focus?.();
+    };
+  }, [isActive, containerRef]);
+}
+
 export interface Project {
   id: string;
   name: string;
@@ -173,6 +230,8 @@ function MagneticPlayButton({ onClick }: { onClick: () => void }) {
       onMouseMove={handleMouseMove}
       onMouseLeave={handleMouseLeave}
       onClick={onClick}
+      role="button"
+      aria-label="Play video"
       className="w-14 h-14 sm:w-20 sm:h-20 rounded-full border-2 border-white flex items-center justify-center backdrop-blur-sm bg-white/10 hover:bg-white/20 cursor-pointer"
       style={{
         transform: `translate(${offset.x}px, ${offset.y}px)`,
@@ -306,6 +365,7 @@ function StickyNav({ show, activeSection }: { show: boolean; activeSection: stri
     { id: "section-feature-film", label: "Feature Film" },
     { id: "section-selected-work", label: "Productions" },
     { id: "section-experiential", label: "Experiential" },
+    { id: "section-contact", label: "Contact" },
   ];
 
   return createPortal(
@@ -317,6 +377,7 @@ function StickyNav({ show, activeSection }: { show: boolean; activeSection: stri
           exit={{ y: -60, opacity: 0 }}
           transition={{ duration: 0.4, ease: [0.16, 1, 0.3, 1] }}
           className="sticky-nav"
+          aria-label="Main navigation"
         >
           <div className="max-w-7xl mx-auto px-4 sm:px-8 h-12 sm:h-14 flex items-center justify-between">
             <button
@@ -338,12 +399,6 @@ function StickyNav({ show, activeSection }: { show: boolean; activeSection: stri
                   {s.label}
                 </button>
               ))}
-              <button
-                onClick={() => document.querySelector('section:last-of-type')?.scrollIntoView({ behavior: "smooth" })}
-                className="text-xs uppercase tracking-wider text-white/40 hover:text-white/70 transition-colors cursor-pointer"
-              >
-                Contact
-              </button>
             </div>
           </div>
         </motion.nav>
@@ -519,14 +574,39 @@ export function PortfolioCinematic({ projects, showreelUrl, featureFilm }: Portf
   const [showNav, setShowNav] = useState(false);
   const [activeSection, setActiveSection] = useState("");
   const [introComplete, setIntroComplete] = useState(false);
+  const [showreelModal, setShowreelModal] = useState(false);
   const videoRef = useRef<HTMLVideoElement | null>(null);
   const stillsRefs = useRef<{ [key: string]: HTMLDivElement | null }>({});
+  const videoModalRef = useRef<HTMLDivElement>(null);
+  const stillModalRef = useRef<HTMLDivElement>(null);
+  const showreelModalRef = useRef<HTMLDivElement>(null);
 
   const handleIntroComplete = useCallback(() => setIntroComplete(true), []);
 
+  // ── Body scroll lock for modals ──
+  useBodyScrollLock(!!playingVideo || !!enlargedStill || showreelModal);
+
+  // ── Focus traps for modals ──
+  useFocusTrap(!!playingVideo, videoModalRef);
+  useFocusTrap(!!enlargedStill, stillModalRef);
+  useFocusTrap(showreelModal, showreelModalRef);
+
+  // ── Hash-based scroll on page load ──
+  useEffect(() => {
+    const hash = window.location.hash.slice(1);
+    if (hash) {
+      // Delay to ensure DOM is ready after intro
+      const timeout = setTimeout(() => {
+        const el = document.getElementById(hash);
+        el?.scrollIntoView({ behavior: "smooth" });
+      }, introComplete ? 100 : 4000);
+      return () => clearTimeout(timeout);
+    }
+  }, [introComplete]);
+
   // ── Scroll handler: back-to-top + progress bar + sticky nav + active section ──
   useEffect(() => {
-    const sectionIds = ["section-feature-film", "section-selected-work", "section-experiential"];
+    const sectionIds = ["section-feature-film", "section-selected-work", "section-experiential", "section-contact"];
     const handleScroll = () => {
       const scrollY = window.scrollY;
       setShowBackToTop(scrollY > window.innerHeight);
@@ -566,6 +646,7 @@ export function PortfolioCinematic({ projects, showreelUrl, featureFilm }: Portf
       if (e.key === "Escape") {
         if (enlargedStill) setEnlargedStill(null);
         else if (playingVideo) { setPlayingVideo(null); setSelectedSeriesVideo(null); }
+        else if (showreelModal) setShowreelModal(false);
       }
       if (enlargedStill) {
         if (e.key === "ArrowLeft") navigateStill(-1);
@@ -574,7 +655,7 @@ export function PortfolioCinematic({ projects, showreelUrl, featureFilm }: Portf
     };
     window.addEventListener("keydown", handleKeyDown);
     return () => window.removeEventListener("keydown", handleKeyDown);
-  }, [enlargedStill, playingVideo, navigateStill]);
+  }, [enlargedStill, playingVideo, navigateStill, showreelModal]);
 
   const scrollToTop = () => window.scrollTo({ top: 0, behavior: "smooth" });
 
@@ -663,6 +744,10 @@ export function PortfolioCinematic({ projects, showreelUrl, featureFilm }: Portf
               transition={{ duration: 0.6, ease: [0.16, 1, 0.3, 1] }}
               className="fixed inset-0 bg-black/95 z-50 flex items-center justify-center p-4 md:p-8 backdrop-blur-sm"
               onClick={handleCloseVideo}
+              ref={videoModalRef}
+              role="dialog"
+              aria-modal="true"
+              aria-label={`Video player for ${project?.name || 'project'}`}
             >
               <motion.button
                 initial={{ opacity: 0, scale: 0.8 }}
@@ -670,6 +755,7 @@ export function PortfolioCinematic({ projects, showreelUrl, featureFilm }: Portf
                 transition={{ delay: 0.3 }}
                 onClick={handleCloseVideo}
                 className="absolute top-4 right-4 md:top-8 md:right-8 w-12 h-12 rounded-full bg-white/10 hover:bg-white/20 flex items-center justify-center transition-all z-10"
+                aria-label="Close video"
               >
                 <X className="w-6 h-6" />
               </motion.button>
@@ -694,7 +780,7 @@ export function PortfolioCinematic({ projects, showreelUrl, featureFilm }: Portf
                       >
                         <div className="relative aspect-video rounded-lg overflow-hidden border-2 border-white/10 hover:border-cyan-400/50 transition-all duration-300">
                           {video.thumbnail ? (
-                            <img src={video.thumbnail} alt={video.name} className="w-full h-full object-cover" loading="lazy" />
+                            <img src={video.thumbnail} alt={`${video.name} – thumbnail`} className="w-full h-full object-cover" loading="lazy" />
                           ) : (
                             <div className="absolute inset-0 bg-gradient-to-br from-purple-900/30 to-cyan-900/30" />
                           )}
@@ -741,6 +827,7 @@ export function PortfolioCinematic({ projects, showreelUrl, featureFilm }: Portf
                         frameBorder="0"
                         allow="autoplay; fullscreen; picture-in-picture"
                         allowFullScreen
+                        title={`${project?.name || 'Project'} video`}
                       />
                     );
                   })()}
@@ -751,6 +838,50 @@ export function PortfolioCinematic({ projects, showreelUrl, featureFilm }: Portf
         })()}
       </AnimatePresence>
       
+      {/* Showreel Modal */}
+      <AnimatePresence>
+        {showreelModal && (
+          <motion.div
+            key="showreel-modal"
+            initial={{ clipPath: 'circle(0% at 50% 50%)' }}
+            animate={{ clipPath: 'circle(100% at 50% 50%)' }}
+            exit={{ clipPath: 'circle(0% at 50% 50%)' }}
+            transition={{ duration: 0.6, ease: [0.16, 1, 0.3, 1] }}
+            className="fixed inset-0 bg-black/95 z-50 flex items-center justify-center p-4 md:p-8 backdrop-blur-sm"
+            onClick={() => setShowreelModal(false)}
+            ref={showreelModalRef}
+            role="dialog"
+            aria-modal="true"
+            aria-label="Showreel video player"
+          >
+            <motion.button
+              initial={{ opacity: 0, scale: 0.8 }}
+              animate={{ opacity: 1, scale: 1 }}
+              transition={{ delay: 0.3 }}
+              onClick={() => setShowreelModal(false)}
+              className="absolute top-4 right-4 md:top-8 md:right-8 w-12 h-12 rounded-full bg-white/10 hover:bg-white/20 flex items-center justify-center transition-all z-10"
+              aria-label="Close showreel"
+            >
+              <X className="w-6 h-6" />
+            </motion.button>
+            <div
+              className="w-full max-w-7xl aspect-video relative"
+              onClick={(e) => e.stopPropagation()}
+            >
+              <iframe
+                src="https://player.vimeo.com/video/1174467043?autoplay=1"
+                className="w-full h-full bg-black"
+                style={{ backgroundColor: '#000000', border: 'none' }}
+                frameBorder="0"
+                allow="autoplay; fullscreen; picture-in-picture"
+                allowFullScreen
+                title="Eric Zheng Showreel 2025"
+              />
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
       {/* #1: Hero Section — Full Screen with Background Showreel Video */}
       <section className="h-screen flex items-center justify-center px-4 sm:px-6 md:px-16 relative overflow-hidden">
         {/* Background: Showreel Video or Image Slideshow Fallback */}
@@ -778,7 +909,7 @@ export function PortfolioCinematic({ projects, showreelUrl, featureFilm }: Portf
             >
               <img
                 src={heroImages[heroImageIndex]}
-                alt=""
+                alt="Eric Zheng production showcase"
                 className="w-full h-full object-cover"
               />
             </motion.div>
@@ -1017,6 +1148,10 @@ export function PortfolioCinematic({ projects, showreelUrl, featureFilm }: Portf
             exit={{ opacity: 0 }}
             onClick={() => setEnlargedStill(null)}
             className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/90 backdrop-blur-sm cursor-pointer"
+            ref={stillModalRef}
+            role="dialog"
+            aria-modal="true"
+            aria-label="Image gallery"
           >
             <motion.button
               initial={{ opacity: 0, scale: 0.8 }}
@@ -1024,6 +1159,7 @@ export function PortfolioCinematic({ projects, showreelUrl, featureFilm }: Portf
               exit={{ opacity: 0, scale: 0.8 }}
               onClick={() => setEnlargedStill(null)}
               className="absolute top-4 sm:top-8 right-4 sm:right-8 z-10 w-10 h-10 sm:w-12 sm:h-12 flex items-center justify-center rounded-full bg-white/10 hover:bg-white/20 transition-colors"
+              aria-label="Close gallery"
             >
               <X className="w-5 h-5 sm:w-6 sm:h-6" />
             </motion.button>
@@ -1033,12 +1169,14 @@ export function PortfolioCinematic({ projects, showreelUrl, featureFilm }: Portf
                 <button
                   onClick={(e) => { e.stopPropagation(); navigateStill(-1); }}
                   className="absolute left-2 sm:left-6 top-1/2 -translate-y-1/2 z-10 w-10 h-10 sm:w-12 sm:h-12 rounded-full bg-white/10 hover:bg-white/20 flex items-center justify-center transition-colors"
+                  aria-label="Previous image"
                 >
                   <ChevronLeft className="w-5 h-5 sm:w-6 sm:h-6" />
                 </button>
                 <button
                   onClick={(e) => { e.stopPropagation(); navigateStill(1); }}
                   className="absolute right-2 sm:right-6 top-1/2 -translate-y-1/2 z-10 w-10 h-10 sm:w-12 sm:h-12 rounded-full bg-white/10 hover:bg-white/20 flex items-center justify-center transition-colors"
+                  aria-label="Next image"
                 >
                   <ChevronRight className="w-5 h-5 sm:w-6 sm:h-6" />
                 </button>
@@ -1056,7 +1194,7 @@ export function PortfolioCinematic({ projects, showreelUrl, featureFilm }: Portf
               exit={{ scale: 0.9, opacity: 0 }}
               transition={{ duration: 0.3 }}
               src={enlargedStill.src}
-              alt="Enlarged production still"
+              alt={`Production still ${enlargedStill.index + 1} of ${enlargedStill.images.length}`}
               className="max-w-full max-h-[85vh] object-contain rounded-lg shadow-2xl"
               onClick={(e) => e.stopPropagation()}
             />
@@ -1065,13 +1203,13 @@ export function PortfolioCinematic({ projects, showreelUrl, featureFilm }: Portf
       </AnimatePresence>
 
       {/* Select Clients */}
-      <SelectClients />
+      <SelectClients onPlayShowreel={() => setShowreelModal(true)} />
 
       {/* Experiential & Spatial Section */}
       <ExperientialSpatial />
 
       {/* Contact Section — Enhanced with #12 Scramble Email */}
-      <section className="px-4 sm:px-6 md:px-16 lg:px-32 py-20 sm:py-32 md:py-48 relative">
+      <section id="section-contact" className="px-4 sm:px-6 md:px-16 lg:px-32 py-20 sm:py-32 md:py-48 relative">
         <motion.div {...FADE_UP} className="max-w-2xl mx-auto text-center relative">
           {/* #9: Gradient text on contact title */}
           <h2 className="text-4xl sm:text-5xl md:text-7xl mb-4 sm:mb-6 tracking-tight font-light">
@@ -1093,6 +1231,7 @@ export function PortfolioCinematic({ projects, showreelUrl, featureFilm }: Portf
                 target="_blank" 
                 rel="noopener noreferrer"
                 className="hover:text-purple-400 transition-colors"
+                aria-label="Eric Zheng on LinkedIn"
               >
                 <Linkedin className="w-6 h-6" />
               </a>
@@ -1138,6 +1277,12 @@ export function PortfolioCinematic({ projects, showreelUrl, featureFilm }: Portf
                   className={`w-2.5 h-2.5 rounded-full transition-colors cursor-pointer ${activeSection === 'section-experiential' ? 'bg-pink-400/80 scale-125' : 'bg-white/25 hover:bg-pink-400/60'}`}
                   aria-label="Go to Experiential & Spatial"
                   title="Experiential & Spatial"
+                />
+                <button
+                  onClick={() => document.getElementById("section-contact")?.scrollIntoView({ behavior: "smooth" })}
+                  className={`w-2.5 h-2.5 rounded-full transition-colors cursor-pointer ${activeSection === 'section-contact' ? 'bg-cyan-400/80 scale-125' : 'bg-white/25 hover:bg-cyan-400/60'}`}
+                  aria-label="Go to Contact"
+                  title="Contact"
                 />
               </div>
             </motion.div>

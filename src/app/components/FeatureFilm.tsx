@@ -7,6 +7,28 @@ import berlinLogo from "figma:asset/ac2091adb3e2c0ddbae7a4f3265e6130185d8a09.png
 // ── Shared animation constants ──
 const VIEWPORT_ONCE = { once: true, margin: "-100px" as const };
 
+// ── Body scroll lock utility ──
+function useBodyScrollLock(isLocked: boolean) {
+  useEffect(() => {
+    if (isLocked) {
+      const scrollY = window.scrollY;
+      document.body.style.position = 'fixed';
+      document.body.style.top = `-${scrollY}px`;
+      document.body.style.left = '0';
+      document.body.style.right = '0';
+      document.body.style.overflow = 'hidden';
+      return () => {
+        document.body.style.position = '';
+        document.body.style.top = '';
+        document.body.style.left = '';
+        document.body.style.right = '';
+        document.body.style.overflow = '';
+        window.scrollTo(0, scrollY);
+      };
+    }
+  }, [isLocked]);
+}
+
 interface FeatureFilmProps {
   film: {
     title: string;
@@ -110,6 +132,9 @@ export function FeatureFilm({ film }: FeatureFilmProps) {
     window.addEventListener("keydown", handleKeyDown);
     return () => window.removeEventListener("keydown", handleKeyDown);
   }, [enlargedStill, navigateStill]);
+
+  // Lock body scroll when modal is open
+  useBodyScrollLock(!!enlargedStill);
 
   return (
     <section className="relative py-10 sm:py-16 overflow-hidden">
@@ -227,7 +252,7 @@ export function FeatureFilm({ film }: FeatureFilmProps) {
                   </motion.div>
 
                   <motion.p layout className="text-base sm:text-lg text-white/60 font-medium mb-4 sm:mb-6 uppercase tracking-wide" style={{ fontFamily: 'var(--font-sans)' }}>
-                    <span className="text-white/40">as</span> Producer
+                    <span className="text-white/40">as</span> <span className="text-cyan-400">Producer</span>
                   </motion.p>
                 </div>
 
@@ -280,6 +305,7 @@ export function FeatureFilm({ film }: FeatureFilmProps) {
                             frameBorder="0"
                             allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
                             allowFullScreen
+                            title={`${film.title} – Official Trailer`}
                           />
                         ) : (
                           <div
@@ -288,7 +314,7 @@ export function FeatureFilm({ film }: FeatureFilmProps) {
                           >
                             <img
                               src={film.poster}
-                              alt="Trailer thumbnail"
+                              alt={`${film.title} – trailer thumbnail`}
                               className="absolute inset-0 w-full h-full object-cover opacity-50"
                             />
                             <div className="relative z-10 w-16 h-16 sm:w-20 sm:h-20 rounded-full bg-gradient-to-br from-cyan-500 to-purple-500 flex items-center justify-center group-hover:scale-110 transition-transform duration-300 shadow-2xl">
@@ -394,7 +420,7 @@ export function FeatureFilm({ film }: FeatureFilmProps) {
                               >
                                 <img
                                   src={still}
-                                  alt={`Still ${index + 1}`}
+                                  alt={`${film.title} – production still ${index + 1}`}
                                   className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
                                   loading="lazy"
                                 />
@@ -422,6 +448,9 @@ export function FeatureFilm({ film }: FeatureFilmProps) {
             exit={{ opacity: 0 }}
             onClick={() => setEnlargedStill(null)}
             className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/90 backdrop-blur-sm cursor-pointer"
+            role="dialog"
+            aria-modal="true"
+            aria-label={`${film.title} stills gallery`}
           >
             <motion.button
               initial={{ opacity: 0, scale: 0.8 }}
@@ -429,6 +458,7 @@ export function FeatureFilm({ film }: FeatureFilmProps) {
               exit={{ opacity: 0, scale: 0.8 }}
               onClick={() => setEnlargedStill(null)}
               className="absolute top-4 sm:top-8 right-4 sm:right-8 z-10 w-10 h-10 sm:w-12 sm:h-12 flex items-center justify-center rounded-full bg-white/10 hover:bg-white/20 transition-colors"
+              aria-label="Close gallery"
             >
               <X className="w-5 h-5 sm:w-6 sm:h-6" />
             </motion.button>
@@ -439,12 +469,14 @@ export function FeatureFilm({ film }: FeatureFilmProps) {
                 <button
                   onClick={(e) => { e.stopPropagation(); navigateStill(-1); }}
                   className="absolute left-2 sm:left-6 top-1/2 -translate-y-1/2 z-10 w-10 h-10 sm:w-12 sm:h-12 rounded-full bg-white/10 hover:bg-white/20 flex items-center justify-center transition-colors"
+                  aria-label="Previous still"
                 >
                   <ChevronLeft className="w-5 h-5 sm:w-6 sm:h-6" />
                 </button>
                 <button
                   onClick={(e) => { e.stopPropagation(); navigateStill(1); }}
                   className="absolute right-2 sm:right-6 top-1/2 -translate-y-1/2 z-10 w-10 h-10 sm:w-12 sm:h-12 rounded-full bg-white/10 hover:bg-white/20 flex items-center justify-center transition-colors"
+                  aria-label="Next still"
                 >
                   <ChevronRight className="w-5 h-5 sm:w-6 sm:h-6" />
                 </button>
@@ -463,7 +495,7 @@ export function FeatureFilm({ film }: FeatureFilmProps) {
               exit={{ scale: 0.9, opacity: 0 }}
               transition={{ duration: 0.3 }}
               src={enlargedStill.src}
-              alt="Enlarged production still"
+              alt={`${film.title} – still ${enlargedStill.index + 1} of ${film.stills.length}`}
               className="max-w-full max-h-[85vh] object-contain rounded-lg shadow-2xl"
               onClick={(e) => e.stopPropagation()}
             />
