@@ -22,12 +22,18 @@ function useBodyScrollLock(isLocked: boolean) {
       document.body.style.right = '0';
       document.body.style.overflow = 'hidden';
       return () => {
+        // Prevent flash: hide overflow on html, restore scroll, then clean up
+        document.documentElement.style.overflow = 'hidden';
         document.body.style.position = '';
         document.body.style.top = '';
         document.body.style.left = '';
         document.body.style.right = '';
         document.body.style.overflow = '';
-        window.scrollTo(0, scrollY);
+        window.scrollTo({ top: scrollY, behavior: 'instant' as ScrollBehavior });
+        // Allow repaint at correct position before re-enabling scroll
+        requestAnimationFrame(() => {
+          document.documentElement.style.overflow = '';
+        });
       };
     }
   }, [isLocked]);
@@ -1202,8 +1208,45 @@ export function PortfolioCinematic({ projects, showreelUrl, featureFilm }: Portf
         )}
       </AnimatePresence>
 
+      {/* Showreel CTA — between productions and client logos */}
+      <motion.div
+        initial={{ opacity: 0, y: 30 }}
+        whileInView={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.8 }}
+        viewport={{ once: true, margin: "-100px" }}
+        className="pt-10 sm:pt-16 pb-8 sm:pb-12 flex flex-col items-center gap-5"
+      >
+        <p
+          className="text-white/35 text-xs sm:text-sm tracking-[0.25em] uppercase"
+          style={{ fontFamily: "var(--font-sans)" }}
+        >
+          The Full Picture
+        </p>
+        <button
+          onClick={() => setShowreelModal(true)}
+          className="group/reel inline-flex items-center gap-2.5 px-6 py-2.5 rounded-full border border-white/25 hover:border-cyan-400/50 bg-white/5 hover:bg-white/10 backdrop-blur-sm transition-all duration-300 cursor-pointer"
+          aria-label="Play showreel"
+        >
+          <span className="w-7 h-7 rounded-full border border-white/40 group-hover/reel:border-cyan-400/60 flex items-center justify-center transition-colors">
+            <Play className="w-3 h-3 ml-0.5 text-white/80 group-hover/reel:text-cyan-400 transition-colors" />
+          </span>
+          <span
+            className="text-xs sm:text-sm uppercase tracking-[0.2em] text-white/70 group-hover/reel:text-white transition-colors"
+            style={{ fontFamily: "var(--font-sans)" }}
+          >
+            Showreel
+          </span>
+          <span
+            className="text-[10px] text-white/30 group-hover/reel:text-white/50 transition-colors"
+            style={{ fontFamily: "var(--font-sans)" }}
+          >
+            2:08
+          </span>
+        </button>
+      </motion.div>
+
       {/* Select Clients */}
-      <SelectClients onPlayShowreel={() => setShowreelModal(true)} />
+      <SelectClients />
 
       {/* Experiential & Spatial Section */}
       <ExperientialSpatial />

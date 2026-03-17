@@ -1,6 +1,4 @@
-import { motion } from "motion/react";
 import logoSprite from "figma:asset/a35e77d23c398eadfd07b9b676e25b35d5e3c33b.png";
-import { Play } from "lucide-react";
 
 // 16 logos from Figma sprite, sorted left-to-right by original layout position
 const logos: { w: number; h: number; crop: string }[] = [
@@ -43,55 +41,24 @@ function LogoItem({ logo }: { logo: (typeof logos)[0] }) {
   );
 }
 
-export function SelectClients({ onPlayShowreel }: { onPlayShowreel?: () => void }) {
+export function SelectClients() {
   // Duplicate set for seamless loop
   const strip = [...logos, ...logos];
 
   return (
-    <section className="py-16 sm:py-24 relative overflow-hidden">
+    <section className="pt-8 sm:pt-12 pb-16 sm:pb-24 relative overflow-hidden">
       {/* Top gradient line */}
       <div className="flex justify-center mb-10 sm:mb-14">
         <div className="w-48 h-px bg-gradient-to-r from-transparent via-cyan-400/30 to-transparent" />
       </div>
 
-      {/* Showreel CTA */}
-      {onPlayShowreel && (
-        <motion.div
-          initial={{ opacity: 0, y: 30 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.8 }}
-          viewport={{ once: true, margin: "-100px" }}
-          className="mb-12 sm:mb-16 flex flex-col items-center gap-5"
-        >
-          <p
-            className="text-white/35 text-xs sm:text-sm tracking-[0.25em] uppercase"
-            style={{ fontFamily: "var(--font-sans)" }}
-          >
-            The Full Picture
-          </p>
-          <button
-            onClick={onPlayShowreel}
-            className="group/reel inline-flex items-center gap-2.5 px-6 py-2.5 rounded-full border border-white/25 hover:border-cyan-400/50 bg-white/5 hover:bg-white/10 backdrop-blur-sm transition-all duration-300 cursor-pointer"
-            aria-label="Play showreel"
-          >
-            <span className="w-7 h-7 rounded-full border border-white/40 group-hover/reel:border-cyan-400/60 flex items-center justify-center transition-colors">
-              <Play className="w-3 h-3 ml-0.5 text-white/80 group-hover/reel:text-cyan-400 transition-colors" />
-            </span>
-            <span
-              className="text-xs sm:text-sm uppercase tracking-[0.2em] text-white/70 group-hover/reel:text-white transition-colors"
-              style={{ fontFamily: "var(--font-sans)" }}
-            >
-              Showreel
-            </span>
-            <span
-              className="text-[10px] text-white/30 group-hover/reel:text-white/50 transition-colors"
-              style={{ fontFamily: "var(--font-sans)" }}
-            >
-              2:08
-            </span>
-          </button>
-        </motion.div>
-      )}
+      {/* Title */}
+      <h3
+        className="text-center text-[10px] sm:text-[11px] tracking-[0.35em] text-white/30 mb-10 sm:mb-14"
+        style={{ fontFamily: "var(--font-sans)" }}
+      >
+        SELECT CLIENTS
+      </h3>
 
       {/* Marquee */}
       <div className="relative">
